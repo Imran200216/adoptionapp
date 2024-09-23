@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
         width: size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.zero,
-          color: AppColors.secondaryColor,
+          color: AppColors.primaryColor,
         ),
         child: InkWell(
           onTap: () {
@@ -30,7 +30,7 @@ class SplashScreen extends StatelessWidget {
               style: TextStyle(
                 fontFamily: "NunitoSans",
                 fontWeight: FontWeight.w500,
-                color: AppColors.primaryColor,
+                color: AppColors.secondaryColor,
                 fontSize: size.width * 0.068,
               ),
             ),

@@ -1,5 +1,5 @@
 import 'package:adoptionapp/constants/colors.dart';
-import 'package:adoptionapp/provider/get_started_provider.dart';
+import 'package:adoptionapp/provider/screen_provider/get_started_provider.dart';
 import 'package:adoptionapp/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,23 +14,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          /// get started provider
-          ChangeNotifierProvider(
-            create: (_) => GetStartedProvider(),
-          ),
-        ],
-        builder: (context, child) {
-          return MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: AppColors.primaryColor,
-              ),
-              useMaterial3: true,
+      providers: [
+        /// get started provider
+        ChangeNotifierProvider(
+          create: (_) => GetStartedProvider(),
+        ),
+      ],
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primaryColor,
             ),
-            home: const SplashScreen(),
-          );
-        });
+            useMaterial3: true,
+          ),
+          home: const SplashScreen(),
+        );
+      },
+    );
   }
 }
