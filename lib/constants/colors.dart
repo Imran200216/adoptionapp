@@ -7,4 +7,5 @@ class AppColors {
   static Color titleColor = const Color(0xFFF68971);
   static Color subTitleColor = const Color(0xFF938B96);
   static Color blackColor = Colors.black;
+  static Color guestBtnColor = const Color(0xFFF0F4F6);
 }

@@ -9,6 +9,9 @@ class CustomIconBtn extends StatelessWidget {
   final double btnBorderRadius;
   final IconData btnIcon;
   final VoidCallback btnOnTap;
+  final Color btnColor;
+  final Color btnTextColor;
+  final Color btnIconColor;
 
   const CustomIconBtn({
     super.key,
@@ -18,6 +21,9 @@ class CustomIconBtn extends StatelessWidget {
     required this.btnBorderRadius,
     required this.btnOnTap,
     required this.btnIcon,
+    required this.btnColor,
+    required this.btnTextColor,
+    required this.btnIconColor,
   });
 
   @override
@@ -30,7 +36,7 @@ class CustomIconBtn extends StatelessWidget {
         width: btnWidth,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(btnBorderRadius),
-          color: AppColors.primaryColor,
+          color: btnColor,
         ),
         child: Center(
           child: Row(
@@ -40,14 +46,19 @@ class CustomIconBtn extends StatelessWidget {
               Icon(
                 btnIcon,
                 size: size.height * 0.03,
-                color: AppColors.secondaryColor,
+                color: btnIconColor,
               ),
               SizedBox(
                 width: size.width * 0.02,
               ),
               Text(
                 btnText,
-                style: CustomTextStyles.buttonText(context),
+                style: TextStyle(
+                  fontSize: size.width * 0.04,
+                  fontWeight: FontWeight.w800,
+                  fontFamily: "NunitoSans",
+                  color: btnTextColor,
+                ),
               ),
             ],
           ),

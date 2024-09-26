@@ -5,18 +5,21 @@ class CustomTextField extends StatelessWidget {
   final IconData textFieldIcon;
   final TextEditingController? textEditingController;
   final String textFieldName;
+  final TextInputType textFieldInputType;
 
   const CustomTextField({
     super.key,
     required this.textFieldIcon,
     required this.textFieldName,
     this.textEditingController,
+    required this.textFieldInputType,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return TextField(
+      keyboardType: textFieldInputType,
       style: TextStyle(
         fontSize: size.width * 0.042,
         color: AppColors.blackColor,

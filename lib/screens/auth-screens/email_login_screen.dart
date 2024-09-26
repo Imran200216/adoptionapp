@@ -1,6 +1,7 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:adoptionapp/screens/auth-screens/email_register_screen.dart';
+import 'package:adoptionapp/screens/auth-screens/forget_password_screen.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
@@ -46,6 +47,7 @@ class EmailLoginScreen extends StatelessWidget {
 
                   /// mail address
                   const CustomTextField(
+                    textFieldInputType: TextInputType.emailAddress,
                     textFieldIcon: Icons.alternate_email,
                     textFieldName: "Email Address",
                   ),
@@ -55,16 +57,48 @@ class EmailLoginScreen extends StatelessWidget {
 
                   /// password
                   const CustomTextField(
+                    textFieldInputType: TextInputType.visiblePassword,
                     textFieldIcon: Icons.lock_outline,
                     textFieldName: "Password",
                   ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+
+                  /// forget password
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const ForgetPasswordScreen();
+                          }));
+                        },
+                        child: Text(
+                          "Forget Password?",
+                          style: TextStyle(
+                            fontFamily: "NunitoSans",
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryColor,
+                            fontSize: size.width * 0.042,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
                   SizedBox(
-                    height: size.height * 0.06,
+                    height: size.height * 0.04,
                   ),
 
                   /// login btn
                   CustomIconBtn(
+                    btnTextColor: AppColors.secondaryColor,
+                    btnIconColor: AppColors.secondaryColor,
+                    btnColor: AppColors.primaryColor,
                     btnHeight: size.height * 0.06,
                     btnWidth: size.width,
                     btnText: "Login",
@@ -99,7 +133,7 @@ class EmailLoginScreen extends StatelessWidget {
                           }));
                         },
                         child: Text(
-                          "Just Register",
+                          "Just Register!",
                           style: TextStyle(
                             fontFamily: "NunitoSans",
                             fontWeight: FontWeight.w700,

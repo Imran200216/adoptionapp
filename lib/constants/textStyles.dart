@@ -77,4 +77,25 @@ class CustomTextStyles {
       color: AppColors.primaryColor,
     );
   }
+
+  static TextStyle authSubTitleText(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return TextStyle(
+      fontSize: screenWidth * 0.04,
+      fontWeight: FontWeight.w600,
+      fontFamily: "NunitoSans",
+      color: const Color(0xFF57647F),
+    );
+  }
+
+  /// drawer text
+  static TextStyle drawerText(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return TextStyle(
+      fontSize: screenWidth * 0.04,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NunitoSans",
+      color: AppColors.subTitleColor,
+    );
+  }
 }
