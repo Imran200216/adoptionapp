@@ -1,4 +1,6 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
+import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/screen_provider/get_started_provider.dart';
 import 'package:adoptionapp/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,16 @@ class MyApp extends StatelessWidget {
         /// get started provider
         ChangeNotifierProvider(
           create: (_) => GetStartedProvider(),
+        ),
+
+        /// email authentication provider
+        ChangeNotifierProvider(
+          create: (_) => EmailAuthProvider(),
+        ),
+
+        /// guest authentication provider
+        ChangeNotifierProvider(
+          create: (_) => GuestAuthProvider(),
         ),
       ],
       builder: (context, child) {

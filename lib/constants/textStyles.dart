@@ -71,7 +71,7 @@ class CustomTextStyles {
   static TextStyle authTitleText(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return TextStyle(
-      fontSize: screenWidth * 0.08,
+      fontSize: screenWidth * 0.07,
       fontWeight: FontWeight.w900,
       fontFamily: "NunitoSans",
       color: AppColors.primaryColor,

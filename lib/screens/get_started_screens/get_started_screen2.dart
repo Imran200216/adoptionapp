@@ -20,31 +20,35 @@ class GetStartedScreen2 extends StatelessWidget {
       width: size.width,
       child: Column(
         children: [
-          CachedNetworkImage(
-            imageUrl:
-                "https://images.unsplash.com/photo-1640066763294-fe73c8fde1a6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            placeholder: (context, url) {
-              return Center(
-                child: LoadingAnimationWidget.newtonCradle(
+          /// image
+          Container(
+            width: size.width * 0.84,
+            height: size.height * 0.5,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: CachedNetworkImage(
+                imageUrl:
+                    "https://images.unsplash.com/photo-1640066763294-fe73c8fde1a6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                placeholder: (context, url) {
+                  return Center(
+                    child: LoadingAnimationWidget.newtonCradle(
+                      color: AppColors.primaryColor,
+                      size: size.width * 0.3,
+                    ),
+                  );
+                },
+                errorWidget: (context, url, error) => Icon(
+                  Icons.error,
                   color: AppColors.primaryColor,
-                  size: size.width * 0.3,
                 ),
-              );
-            },
-            imageBuilder: (context, imageProvider) {
-              return Container(
-                width: size.width * 0.84,
-                height: size.height * 0.5,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
+
           SizedBox(
             height: size.height * 0.04,
           ),
