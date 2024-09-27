@@ -13,7 +13,8 @@ class CustomListTile extends StatelessWidget {
     super.key,
     required this.leadingListTilePath,
     required this.leadingListTileBgColor,
-    required this.listTileText, required this.listTileOnTap,
+    required this.listTileText,
+    required this.listTileOnTap,
   });
 
   @override
@@ -21,7 +22,7 @@ class CustomListTile extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return InkWell(
-      onTap: listTileOnTap,
+      onTap: listTileOnTap, // This should handle the tap
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         leading: Container(
@@ -47,7 +48,6 @@ class CustomListTile extends StatelessWidget {
         ),
         title: Text(listTileText),
         titleTextStyle: CustomTextStyles.profileListTileText(context),
-        onTap: () {},
       ),
     );
   }

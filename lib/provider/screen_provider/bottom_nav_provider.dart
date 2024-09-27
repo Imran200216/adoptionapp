@@ -7,7 +7,7 @@ class BottomNavProvider extends ChangeNotifier {
 
   void setIndex(int index) {
     _currentIndex = index;
-    notifyListeners();
+    notifyListeners(); // This should trigger UI rebuild
   }
 
   void navigateToIndex(BuildContext context, int index) {

@@ -1,5 +1,3 @@
-import 'package:adoptionapp/constants/colors.dart';
-import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:flutter/material.dart';
 
 class CustomIconBtn extends StatelessWidget {

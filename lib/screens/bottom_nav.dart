@@ -8,7 +8,6 @@ import 'package:adoptionapp/screens/bottom_nav_screens/profile_screen.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:provider/provider.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -83,8 +82,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 0
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 28,
-                        width: 28,
+                        height: 30,
+                        width: 30,
                       ),
                       label: 'Home',
                     ),
@@ -94,8 +93,9 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 1
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 28,
-                        width: 28,
+                        height: 30,
+                        width: 30,
+                        fit: BoxFit.cover,
                       ),
                       label: 'Facts',
                     ),
@@ -105,8 +105,9 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 2
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 34,
-                        width: 34,
+                        height: 30,
+                        width: 30,
+                        fit: BoxFit.cover,
                       ),
                       label: 'Add',
                     ),
@@ -116,8 +117,9 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 3
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 28,
-                        width: 28,
+                        height: 30,
+                        width: 30,
+                        fit: BoxFit.cover,
                       ),
                       label: 'Chats',
                     ),
@@ -127,8 +129,9 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 4
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 28,
-                        width: 28,
+                        height: 30,
+                        width: 30,
+                        fit: BoxFit.cover,
                       ),
                       label: 'Profile',
                     ),
