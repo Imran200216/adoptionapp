@@ -98,4 +98,35 @@ class CustomTextStyles {
       color: AppColors.subTitleColor,
     );
   }
+
+  /// drawer text
+  static TextStyle profileTitleText(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return TextStyle(
+      fontSize: screenWidth * 0.054,
+      fontWeight: FontWeight.w800,
+      fontFamily: "NunitoSans",
+      color: AppColors.blackColor,
+    );
+  }
+
+  static TextStyle profileSubTitleText(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return TextStyle(
+      fontSize: screenWidth * 0.044,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NunitoSans",
+      color: AppColors.subTitleColor,
+    );
+  }
+
+  static TextStyle profileListTileText(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return TextStyle(
+      fontSize: screenWidth * 0.050,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NunitoSans",
+      color: AppColors.blackColor,
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
+import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/provider/screen_provider/get_started_provider.dart';
 import 'package:adoptionapp/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,11 @@ class MyApp extends StatelessWidget {
         /// guest authentication provider
         ChangeNotifierProvider(
           create: (_) => GuestAuthProvider(),
+        ),
+
+        /// bottom nav provider
+        ChangeNotifierProvider(
+          create: (_) => BottomNavProvider(),
         ),
       ],
       builder: (context, child) {

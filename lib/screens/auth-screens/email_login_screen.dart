@@ -2,6 +2,7 @@ import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:adoptionapp/screens/auth-screens/email_register_screen.dart';
 import 'package:adoptionapp/screens/auth-screens/forget_password_screen.dart';
+import 'package:adoptionapp/screens/bottom_nav.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
@@ -103,7 +104,13 @@ class EmailLoginScreen extends StatelessWidget {
                     btnWidth: size.width,
                     btnText: "Login",
                     btnBorderRadius: 4,
-                    btnOnTap: () {},
+                    btnOnTap: () {
+                      /// home screen
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return BottomNavBar();
+                      }));
+                    },
                     btnIcon: Icons.login_rounded,
                   ),
                   SizedBox(

@@ -40,7 +40,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 ),
                 SvgPicture.asset(
                   "assets/images/svg/forget-password.svg",
-                  height: size.height * 0.5,
+                  height: size.height * 0.42,
                   fit: BoxFit.cover,
                 ),
                 Text(
