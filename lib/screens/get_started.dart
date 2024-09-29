@@ -10,6 +10,7 @@ import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/custom_outlined_btn.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -78,6 +79,7 @@ class GetStarted extends StatelessWidget {
                             Expanded(
                               child: CustomBtn(
                                 btnOnTap: () {
+                                  HapticFeedback.heavyImpact();
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(builder: (context) {
                                     return const EmailRegisterScreen();
