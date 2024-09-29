@@ -107,8 +107,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 2
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 30,
-                        width: 30,
+                        height: 34,
+                        width: 34,
                         fit: BoxFit.cover,
                       ),
                       label: 'Add',
