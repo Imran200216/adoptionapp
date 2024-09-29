@@ -4,6 +4,7 @@ import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
@@ -27,6 +28,7 @@ class ForgetPasswordScreen extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {
+                    HapticFeedback.heavyImpact();
                     Navigator.pop(context);
                   },
                   icon: Icon(
@@ -73,7 +75,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                   btnWidth: size.width,
                   btnText: "Submit",
                   btnBorderRadius: 4,
-                  btnOnTap: () {},
+                  btnOnTap: () {
+                    HapticFeedback.heavyImpact();
+                  },
                   btnIcon: Icons.send,
                 ),
               ],

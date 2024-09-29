@@ -4,6 +4,7 @@ import 'package:adoptionapp/screens/auth-screens/email_login_screen.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EmailRegisterScreen extends StatelessWidget {
@@ -91,7 +92,9 @@ class EmailRegisterScreen extends StatelessWidget {
                   btnWidth: size.width,
                   btnText: "Register",
                   btnBorderRadius: 4,
-                  btnOnTap: () {},
+                  btnOnTap: () {
+                    HapticFeedback.heavyImpact();
+                  },
                   btnIcon: Icons.login_rounded,
                 ),
                 SizedBox(
@@ -137,7 +140,9 @@ class EmailRegisterScreen extends StatelessWidget {
                   btnWidth: size.width,
                   btnText: "Register with guest",
                   btnBorderRadius: 4,
-                  btnOnTap: () {},
+                  btnOnTap: () {
+                    HapticFeedback.heavyImpact();
+                  },
                   btnIcon: Icons.person,
                 ),
 
@@ -162,10 +167,11 @@ class EmailRegisterScreen extends StatelessWidget {
                     /// register text btn
                     TextButton(
                       onPressed: () {
+                        HapticFeedback.heavyImpact();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                              return const EmailLoginScreen();
-                            }));
+                          return const EmailLoginScreen();
+                        }));
                       },
                       child: Text(
                         "Login in!",

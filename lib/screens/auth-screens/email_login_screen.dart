@@ -7,6 +7,7 @@ import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EmailLoginScreen extends StatelessWidget {
@@ -73,6 +74,7 @@ class EmailLoginScreen extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () {
+                          HapticFeedback.heavyImpact();
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return const ForgetPasswordScreen();
@@ -105,6 +107,8 @@ class EmailLoginScreen extends StatelessWidget {
                     btnText: "Login",
                     btnBorderRadius: 4,
                     btnOnTap: () {
+                      HapticFeedback.heavyImpact();
+
                       /// home screen
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
@@ -134,6 +138,7 @@ class EmailLoginScreen extends StatelessWidget {
                       /// register text btn
                       TextButton(
                         onPressed: () {
+                          HapticFeedback.heavyImpact();
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return const EmailRegisterScreen();

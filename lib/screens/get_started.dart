@@ -97,6 +97,7 @@ class GetStarted extends StatelessWidget {
                             Expanded(
                               child: CustomOutlinedBtn(
                                 btnOnTap: () {
+                                  HapticFeedback.heavyImpact();
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(builder: (context) {
                                     return const EmailLoginScreen();

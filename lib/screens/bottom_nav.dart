@@ -1,12 +1,13 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/screens/bottom_nav_screens/add_screen.dart';
-import 'package:adoptionapp/screens/bottom_nav_screens/animal_fact_screen.dart';
 import 'package:adoptionapp/screens/bottom_nav_screens/chat_screen.dart';
+import 'package:adoptionapp/screens/bottom_nav_screens/favorite_screen.dart';
 import 'package:adoptionapp/screens/bottom_nav_screens/home_screen.dart';
 import 'package:adoptionapp/screens/bottom_nav_screens/profile_screen.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class BottomNavBar extends StatelessWidget {
   /// Bottom navigation bar screens
   final List<Widget> widgetList = [
     const HomeScreen(),
-    const AnimalFactScreen(),
+    const FavoriteScreen(),
     const AddScreen(),
     const ChatScreen(),
     const ProfileScreen(),
@@ -58,6 +59,7 @@ class BottomNavBar extends StatelessWidget {
                 /// Bottom navigation bar
                 bottomNavigationBar: BottomNavigationBar(
                   onTap: (index) {
+                    HapticFeedback.heavyImpact();
                     bottomNavProvider.setIndex(index);
                   },
                   backgroundColor: AppColors.primaryColor,
@@ -89,15 +91,15 @@ class BottomNavBar extends StatelessWidget {
                     ),
                     BottomNavigationBarItem(
                       icon: SvgPicture.asset(
-                        'assets/images/svg/fact-icon.svg',
+                        'assets/images/svg/favorite-icon.svg',
                         color: bottomNavProvider.currentIndex == 1
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 30,
-                        width: 30,
+                        height: 26,
+                        width: 26,
                         fit: BoxFit.cover,
                       ),
-                      label: 'Facts',
+                      label: 'Favorites',
                     ),
                     BottomNavigationBarItem(
                       icon: SvgPicture.asset(
