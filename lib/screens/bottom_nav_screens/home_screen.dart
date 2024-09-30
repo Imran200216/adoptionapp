@@ -1,4 +1,5 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/pet_card.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -141,7 +142,14 @@ class HomeScreen extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: 24,
                       itemBuilder: (context, index) {
-                        return const PetCard();
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context){
+                              return const  PetDescriptionScreen();
+                            }));
+                          },
+                          child: const PetCard(),
+                        );
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return SizedBox(
