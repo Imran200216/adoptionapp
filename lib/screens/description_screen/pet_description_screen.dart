@@ -30,7 +30,7 @@ class PetDescriptionScreen extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.arrow_back_ios,
-                      size: size.height * 0.04,
+                      size: size.height * 0.03,
                       color: AppColors.subTitleColor,
                     ),
                   ),
