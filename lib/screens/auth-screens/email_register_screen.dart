@@ -1,6 +1,7 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:adoptionapp/screens/auth-screens/email_login_screen.dart';
+import 'package:adoptionapp/screens/avatar_screens/guest_avatar_screen.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +133,7 @@ class EmailRegisterScreen extends StatelessWidget {
                   height: size.height * 0.02,
                 ),
 
+                /// guest tbn
                 CustomIconBtn(
                   btnTextColor: AppColors.blackColor,
                   btnIconColor: AppColors.blackColor,
@@ -142,6 +144,10 @@ class EmailRegisterScreen extends StatelessWidget {
                   btnBorderRadius: 4,
                   btnOnTap: () {
                     HapticFeedback.heavyImpact();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const GuestAvatarScreen();
+                    }));
                   },
                   btnIcon: Icons.person,
                 ),

@@ -1,4 +1,5 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
@@ -36,6 +37,11 @@ class MyApp extends StatelessWidget {
         /// bottom nav provider
         ChangeNotifierProvider(
           create: (_) => BottomNavProvider(),
+        ),
+
+        /// notification provider
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider(),
         ),
       ],
       builder: (context, child) {
