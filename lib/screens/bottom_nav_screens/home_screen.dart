@@ -51,16 +51,30 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AutoSizeText(
-                      textAlign: TextAlign.start,
-                      'ReHome',
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: size.width * 0.05,
-                        color: const Color(0xFF4D4C4C),
-                        fontFamily: "NunitoSans",
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AutoSizeText(
+                          textAlign: TextAlign.start,
+                          'ReHome',
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: size.width * 0.05,
+                            color: const Color(0xFF4D4C4C),
+                            fontFamily: "NunitoSans",
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.notifications,
+                            color: AppColors.subTitleColor,
+                            size: size.width * 0.06,
+                          ),
+                        ),
+                      ],
                     ),
 
                     SizedBox(
@@ -74,6 +88,12 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: TextField(
+                        style: TextStyle(
+                          fontSize: size.width * 0.04,
+                          color: AppColors.blackColor,
+                          fontFamily: "NunitoSans",
+                          fontWeight: FontWeight.w600,
+                        ),
                         decoration: InputDecoration(
                           hintText: "Type your favorite breed...",
                           hintStyle: TextStyle(

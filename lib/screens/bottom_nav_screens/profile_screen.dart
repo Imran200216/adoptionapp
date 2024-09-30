@@ -1,5 +1,6 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
+import 'package:adoptionapp/screens/permission_screen/notification_permission_screen.dart';
 import 'package:adoptionapp/screens/profile_sub_screens/app_information_screen.dart';
 import 'package:adoptionapp/screens/profile_sub_screens/edit_profile_screen.dart';
 import 'package:adoptionapp/widgets/custom_list_tile.dart';
@@ -122,9 +123,53 @@ class ProfileScreen extends StatelessWidget {
                   height: size.height * 0.03,
                 ),
 
+                /// app invite functionality
+                CustomListTile(
+                  listTileOnTap: () {
+                    /// invite friend functionality must be added
+                  },
+                  leadingListTilePath: "invite-icon",
+                  leadingListTileBgColor: AppColors.listLeadingBgColor,
+                  listTileText: "Invite Friends To Adopt",
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+
+                /// rating
+                CustomListTile(
+                  listTileOnTap: () {
+                    /// ratings functionality must be added
+                  },
+                  leadingListTilePath: "rating-icon",
+                  leadingListTileBgColor: AppColors.listLeadingBgColor,
+                  listTileText: "Rate Our ReHome",
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+
+                /// allow notification functionality screen
+                CustomListTile(
+                  listTileOnTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const NotificationPermissionScreen();
+                    }));
+                  },
+                  leadingListTilePath: "notification-icon",
+                  leadingListTileBgColor: AppColors.listLeadingBgColor,
+                  listTileText: "Allow Notification",
+                ),
+                SizedBox(
+                  height: size.height * 0.03,
+                ),
+
                 /// logout
                 CustomListTile(
-                  listTileOnTap: () {},
+                  listTileOnTap: () {
+                    /// logout functionality
+                  },
                   leadingListTilePath: "logout-icon",
                   leadingListTileBgColor: AppColors.primaryLightShapeColor,
                   listTileText: "Logout",

@@ -92,6 +92,16 @@ class AddScreen extends StatelessWidget {
                         height: size.height * 0.02,
                       ),
 
+                      /// pet breed name text field
+                      const CustomTextField(
+                        textFieldIcon: Icons.pets,
+                        textFieldName: "Pet Breed Name",
+                        textFieldInputType: TextInputType.name,
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+
                       /// pet age text field
                       const CustomTextField(
                         textFieldIcon: Icons.pets,
@@ -127,6 +137,16 @@ class AddScreen extends StatelessWidget {
                         textFieldIcon: Icons.call,
                         textFieldName: "Pet Owner Contact",
                         textFieldInputType: TextInputType.phone,
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+
+                      /// pet location text field
+                      const CustomTextField(
+                        textFieldIcon: Icons.location_city,
+                        textFieldName: "Pet Location",
+                        textFieldInputType: TextInputType.streetAddress,
                       ),
                       SizedBox(
                         height: size.height * 0.02,
