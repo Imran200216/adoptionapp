@@ -1,5 +1,5 @@
 import 'package:adoptionapp/constants/colors.dart';
-import 'package:adoptionapp/provider/app_required_providers/guest_avatar_provider.dart';
+import 'package:adoptionapp/provider/user_details_providers/guest_avatar_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

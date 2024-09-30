@@ -1,7 +1,8 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/firebase_options.dart';
-import 'package:adoptionapp/provider/app_required_providers/email_avatar_provider.dart';
-import 'package:adoptionapp/provider/app_required_providers/guest_avatar_provider.dart';
+import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
+import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
+import 'package:adoptionapp/provider/user_details_providers/guest_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
@@ -60,6 +61,11 @@ class MyApp extends StatelessWidget {
         /// email avatar provider
         ChangeNotifierProvider(
           create: (_) => EmailAvatarProvider(),
+        ),
+
+        /// add pet to firebase provider
+        ChangeNotifierProvider(
+          create: (_) => AddPetToFireStoreProvider(),
         ),
       ],
       builder: (context, child) {

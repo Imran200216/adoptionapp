@@ -1,11 +1,13 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
+import 'package:adoptionapp/widgets/custom_drop_down_textfield.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
@@ -16,43 +18,19 @@ class AddScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: size.width,
-                height: size.height * 0.42,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.zero,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.zero,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "https://images.unsplash.com/photo-1570122734014-386e3ef867cc?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    placeholder: (context, url) {
-                      return Center(
-                        child: LoadingAnimationWidget.newtonCradle(
-                          color: AppColors.primaryColor,
-                          size: size.width * 0.3,
-                        ),
-                      );
-                    },
-                    errorWidget: (context, url, error) => Icon(
-                      Icons.error,
-                      color: AppColors.primaryColor,
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
+        body: Consumer<AddPetToFireStoreProvider>(
+          builder: (
+            context,
+            addPetToFireStoreProvider,
+            child,
+          ) {
+            return SingleChildScrollView(
+              child: Container(
                 margin: const EdgeInsets.only(
-                  top: 20,
-                  bottom: 30,
                   left: 20,
                   right: 20,
+                  top: 30,
+                  bottom: 30,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,6 +45,44 @@ class AddScreen extends StatelessWidget {
                       );
                     },
                     children: [
+                      DottedBorder(
+                        color: Colors.grey,
+                        strokeWidth: 2,
+                        dashPattern: const [8, 4],
+                        borderType: BorderType.Rect,
+                        child: Container(
+                          height: size.height * 0.6,
+                          width: size.width,
+                          alignment: Alignment.center,
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_a_photo,
+                                  size: size.width * 0.04,
+                                  color: AppColors.subTitleColor,
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.03,
+                                ),
+                                AutoSizeText(
+                                  textAlign: TextAlign.start,
+                                  'Add your pet image to adopt',
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: size.width * 0.04,
+                                    color: AppColors.subTitleColor,
+                                    fontFamily: "NunitoSans",
+                                  ),
+                                ),
+                              ],
+                            ), // Center the child widget inside
+                          ),
+                        ),
+                      ),
+
                       AutoSizeText(
                         textAlign: TextAlign.start,
                         'Adopt your pet through posting in Rehome',
@@ -83,7 +99,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet name text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petNameController,
                         textFieldIcon: Icons.pets,
                         textFieldName: "Pet Name",
                         textFieldInputType: TextInputType.name,
@@ -93,7 +111,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet breed name text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petBreedController,
                         textFieldIcon: Icons.pets,
                         textFieldName: "Pet Breed Name",
                         textFieldInputType: TextInputType.name,
@@ -103,7 +123,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet age text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petAgeController,
                         textFieldIcon: Icons.pets,
                         textFieldName: "Pet Age",
                         textFieldInputType: TextInputType.number,
@@ -113,17 +135,54 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet gender  text field
-                      const CustomTextField(
-                        textFieldIcon: Icons.pets,
-                        textFieldName: "Pet Gender",
-                        textFieldInputType: TextInputType.text,
+                      CustomDropdown<String>(
+                        items: addPetToFireStoreProvider.listPetGender,
+                        selectedItem: addPetToFireStoreProvider.valuePetGender,
+                        hintText: "Select Pet Gender",
+                        dropdownIcon: Icons.arrow_drop_down,
+                        onChanged: (newValue) {
+                          addPetToFireStoreProvider.setPetGender(newValue);
+                        },
                       ),
+
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+
+                      CustomDropdown<String>(
+                        items: addPetToFireStoreProvider.listPetVaccinated,
+                        selectedItem:
+                            addPetToFireStoreProvider.valuePetVaccinated,
+                        hintText: "Select Vaccination Status",
+                        dropdownIcon: Icons.arrow_drop_down,
+                        onChanged: (newValue) {
+                          addPetToFireStoreProvider.setPetVaccinated(newValue);
+                        },
+                      ),
+
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+
+                      CustomDropdown<String>(
+                        items: addPetToFireStoreProvider.listPetCategory,
+                        selectedItem:
+                            addPetToFireStoreProvider.valuePetCategory,
+                        hintText: "Select Pet Category",
+                        dropdownIcon: Icons.arrow_drop_down,
+                        onChanged: (newValue) {
+                          addPetToFireStoreProvider.setPetCategory(newValue);
+                        },
+                      ),
+
                       SizedBox(
                         height: size.height * 0.02,
                       ),
 
                       /// pet owner name text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petOwnerNameController,
                         textFieldIcon: Icons.person,
                         textFieldName: "Pet Owner Name",
                         textFieldInputType: TextInputType.name,
@@ -133,7 +192,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet owner phone number  text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petOwnerPhoneController,
                         textFieldIcon: Icons.call,
                         textFieldName: "Pet Owner Contact",
                         textFieldInputType: TextInputType.phone,
@@ -143,7 +204,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet location text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petLocationController,
                         textFieldIcon: Icons.location_city,
                         textFieldName: "Pet Location",
                         textFieldInputType: TextInputType.streetAddress,
@@ -153,7 +216,9 @@ class AddScreen extends StatelessWidget {
                       ),
 
                       /// pet description text field
-                      const CustomTextField(
+                      CustomTextField(
+                        textEditingController:
+                            addPetToFireStoreProvider.petDescriptionController,
                         textFieldIcon: Icons.description,
                         textFieldName: "Pet Description",
                         textFieldInputType: TextInputType.text,
@@ -180,8 +245,8 @@ class AddScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
