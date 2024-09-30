@@ -7,7 +7,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class AddScreen extends StatelessWidget {
   const AddScreen({super.key});
@@ -45,41 +47,70 @@ class AddScreen extends StatelessWidget {
                       );
                     },
                     children: [
-                      DottedBorder(
-                        color: Colors.grey,
-                        strokeWidth: 2,
-                        dashPattern: const [8, 4],
-                        borderType: BorderType.Rect,
-                        child: Container(
-                          height: size.height * 0.6,
-                          width: size.width,
-                          alignment: Alignment.center,
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add_a_photo,
-                                  size: size.width * 0.04,
-                                  color: AppColors.subTitleColor,
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.03,
-                                ),
-                                AutoSizeText(
-                                  textAlign: TextAlign.start,
-                                  'Add your pet image to adopt',
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: size.width * 0.04,
-                                    color: AppColors.subTitleColor,
-                                    fontFamily: "NunitoSans",
+                      InkWell(
+                        onTap: () => addPetToFireStoreProvider.onImageTap(
+                            ImageSource.gallery, context),
+                        child: DottedBorder(
+                          color: Colors.grey,
+                          strokeWidth: 2,
+                          dashPattern: const [8, 4],
+                          borderType: BorderType.Rect,
+                          child: Container(
+                            height: size.height * 0.6,
+                            width: size.width,
+                            alignment: Alignment.center,
+                            child: addPetToFireStoreProvider.petImages.isEmpty
+                                ? Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add_a_photo,
+                                          size: size.width * 0.04,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(width: size.width * 0.03),
+                                        Text(
+                                          'Add your pet image to adopt',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: size.width * 0.04,
+                                            color: Colors.grey,
+                                            fontFamily: "NunitoSans",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : PageView.builder(
+                                    itemCount: addPetToFireStoreProvider
+                                        .petImages.length,
+                                    onPageChanged: addPetToFireStoreProvider
+                                        .updateCurrentIndex,
+                                    itemBuilder: (context, index) {
+                                      return Image.file(
+                                        addPetToFireStoreProvider
+                                            .petImages[index],
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
                                   ),
-                                ),
-                              ],
-                            ), // Center the child widget inside
                           ),
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.03),
+                      // Space between the DottedBorder and the indicator
+                      SmoothPageIndicator(
+                        controller: PageController(
+                            initialPage: addPetToFireStoreProvider
+                                .currentIndex), // Set the initial page
+                        count: addPetToFireStoreProvider.petImages.length,
+                        effect: ExpandingDotsEffect(
+                          activeDotColor: AppColors.primaryColor,
+                          dotColor: AppColors.subTitleColor,
+                          dotHeight: 8.0,
+                          dotWidth: 8.0,
                         ),
                       ),
 

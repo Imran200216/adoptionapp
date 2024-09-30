@@ -74,6 +74,19 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     }
   }
 
+  // New method for the onTap callback
+  void onImageTap(ImageSource source, BuildContext context) {
+    pickImage(source, context);
+  }
+
+  int currentIndex = 0;
+
+  // Method to update the current index of the PageView
+  void updateCurrentIndex(int index) {
+    currentIndex = index;
+    notifyListeners(); // Notify listeners of the change
+  }
+
   /// Method to upload images to Firebase Storage and return the list of URLs
   Future<List<String>> uploadImages(
       String petName, BuildContext context) async {
