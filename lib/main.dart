@@ -1,15 +1,23 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/firebase_options.dart';
+import 'package:adoptionapp/provider/app_required_providers/email_avatar_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/guest_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/provider/screen_provider/get_started_provider.dart';
 import 'package:adoptionapp/screens/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -42,6 +50,16 @@ class MyApp extends StatelessWidget {
         /// notification provider
         ChangeNotifierProvider(
           create: (_) => NotificationProvider(),
+        ),
+
+        /// guest avatar provider
+        ChangeNotifierProvider(
+          create: (_) => GuestAvatarProvider(),
+        ),
+
+        /// email avatar provider
+        ChangeNotifierProvider(
+          create: (_) => EmailAvatarProvider(),
         ),
       ],
       builder: (context, child) {

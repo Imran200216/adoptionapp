@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "215143484242",
+    "project_id": "rehome-525e5",
+    "storage_bucket": "rehome-525e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215143484242:android:1f981b9053d03c8dde088b",
+        "android_client_info": {
+          "package_name": "com.adoption.adoptionapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe7ZdSrSqoY9TDHl_cCQRrlDWs9uNG19Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,10 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/widgets/circular_icon_btn.dart';
+import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/pet_description_content.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class PetDescriptionScreen extends StatelessWidget {
   const PetDescriptionScreen({super.key});
@@ -39,22 +42,12 @@ class PetDescriptionScreen extends StatelessWidget {
                     ),
 
                     /// favorite btn
-                    Container(
-                      height: size.height * 0.062,
-                      width: size.width * 0.12,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: AppColors.primaryLightShapeColor,
-                      ),
-                      child: Center(
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.favorite,
-                            size: size.height * 0.03,
-                            color: AppColors.failureToastColor,
-                          ),
-                        ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.favorite,
+                        size: size.height * 0.03,
+                        color: AppColors.failureToastColor,
                       ),
                     ),
                   ],
@@ -165,6 +158,161 @@ class PetDescriptionScreen extends StatelessWidget {
                                 dividerColor: Color(0xFFEEDFFF),
                                 petDescriptionContentTitle: "8 kg",
                                 petDescriptionContentSubTitle: "Weight",
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+
+                          /// vaccinated or not
+                          Container(
+                            height: size.height * 0.05,
+                            width: size.width * 0.44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF7ED596),
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AutoSizeText(
+                                    textAlign: TextAlign.start,
+                                    'Vaccinated',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: size.width * 0.04,
+                                      color: const Color(0xFF445549),
+                                      fontFamily: "NunitoSans",
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.03,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/images/svg/correct-icon.svg",
+                                    height: size.height * 0.03,
+                                    fit: BoxFit.cover,
+                                    color: const Color(0xFF445549),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+
+                          /// address
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            // To ensure alignment at the top
+                            children: [
+                              Container(
+                                height: size.height * 0.12,
+                                width: size.width * 0.12,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFE5F3F8),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.location_on,
+                                    size: size.height * 0.03,
+                                    color: const Color(0xFF85C1E1),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: size.width * 0.04,
+                              ),
+                              Expanded(
+                                // Allowing the text to expand within available space
+                                child: AutoSizeText(
+                                  "No 35, 1st cross thendral nagar, new saram, puducherry - 605013",
+                                  textAlign: TextAlign.start,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  // Add ellipsis if the text overflows
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: size.width * 0.04,
+                                    color:
+                                        AppColors.petDescriptionSubTitleColor,
+                                    fontFamily: "NunitoSans",
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          /// pet description
+                          AutoSizeText(
+                            textAlign: TextAlign.start,
+                            'About Buddy',
+                            maxLines: 2,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: size.width * 0.054,
+                              color: AppColors.petDescriptionTitleColor,
+                              fontFamily: "NunitoSans",
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: size.height * 0.01,
+                          ),
+
+                          AutoSizeText(
+                            textAlign: TextAlign.start,
+                            '''Buddy is a playful, loyal, and affectionate Golden Retriever who's ready to find his forever home! At just 2 years old, Buddy has the energy of a puppy but with the charm and manners of a mature dog. He's the perfect companion for someone who enjoys outdoor activities, long walks, or simply snuggling on the couch.''',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: size.width * 0.042,
+                              color: AppColors.petDescriptionSubTitleColor,
+                              fontFamily: "NunitoSans",
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: size.height * 0.02,
+                          ),
+
+                          Row(
+                            children: [
+                              Row(
+                                children: [
+                                  CircularIconBtn(
+                                    onTap: () {},
+                                    btnIcon: Icons.phone,
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.04,
+                                  ),
+                                  CircularIconBtn(
+                                    onTap: () {},
+                                    btnIcon: Icons.chat,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: size.width * 0.08,
+                              ),
+                              Expanded(
+                                child: CustomBtn(
+                                  btnHeight: size.height * 0.052,
+                                  btnWidth: size.width,
+                                  btnText: "Adopt Buddy",
+                                  btnBorderRadius: 6,
+                                  btnOnTap: () {
+                                    /// adopt functionality
+                                  },
+                                ),
                               ),
                             ],
                           ),
