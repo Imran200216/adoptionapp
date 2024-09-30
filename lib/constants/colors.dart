@@ -12,4 +12,6 @@ class AppColors {
   static Color primaryLightShapeColor = const Color(0xFFFED1D1);
   static Color successToastColor = const Color(0xFF02A75A);
   static Color failureToastColor = const Color(0xFFD92F54);
+  static Color petDescriptionTitleColor = const Color(0xFF3B4857);
+  static Color petDescriptionSubTitleColor = const Color(0xFF6C7682);
 }
