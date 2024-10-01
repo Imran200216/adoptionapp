@@ -7,6 +7,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -48,8 +49,85 @@ class AddScreen extends StatelessWidget {
                     },
                     children: [
                       InkWell(
-                        onTap: () => addPetToFireStoreProvider.onImageTap(
-                            ImageSource.gallery, context),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => Container(
+
+                              height: size.height * 0.40,
+                              width: size.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: AppColors.secondaryColor,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  AutoSizeText(
+                                    textAlign: TextAlign.start,
+                                    'Upload an image to adopt your pets',
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: size.width * 0.06,
+                                      color: AppColors.blackColor,
+                                      fontFamily: "NunitoSans",
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/images/svg/modal-sheet.svg",
+                                    fit: BoxFit.cover,
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+
+                                  /// pick image from camera
+                                  CustomIconBtn(
+                                    btnHeight: size.height * 0.05,
+                                    btnWidth: size.width,
+                                    btnText: "Pick image from camera",
+                                    btnBorderRadius: 6,
+                                    btnOnTap: () {
+                                      addPetToFireStoreProvider.onImageTap(
+                                        ImageSource.camera,
+                                        context,
+                                      );
+                                    },
+                                    btnIcon: Icons.camera,
+                                    btnColor: AppColors.primaryColor,
+                                    btnTextColor: AppColors.secondaryColor,
+                                    btnIconColor: AppColors.secondaryColor,
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+
+                                  /// pick image from gallery
+                                  CustomIconBtn(
+                                    btnHeight: size.height * 0.05,
+                                    btnWidth: size.width,
+                                    btnText: "Pick image from gallery",
+                                    btnBorderRadius: 6,
+                                    btnOnTap: () {
+                                      addPetToFireStoreProvider.onImageTap(
+                                        ImageSource.gallery,
+                                        context,
+                                      );
+                                    },
+                                    btnIcon: Icons.photo,
+                                    btnColor: AppColors.primaryColor,
+                                    btnTextColor: AppColors.secondaryColor,
+                                    btnIconColor: AppColors.secondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                         child: DottedBorder(
                           color: Colors.grey,
                           strokeWidth: 2,
