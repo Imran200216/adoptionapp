@@ -55,8 +55,8 @@ dependencies:
   change_app_package_name: ^1.4.0
   flutter_staggered_animations: ^1.1.1
   animations: ^2.0.11
-  carousel_slider: ^5.0.0
   dotted_border: ^2.1.0
+  animated_text_kit: ^4.2.2
 
 
 
@@ -87,6 +87,7 @@ flutter:
   assets:
     - assets/fonts/Nunito-Sans/
     - assets/images/svg/
+    - assets/images/jpg/
     - assets/lotties/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
@@ -103,6 +104,12 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: Pacifico
+      fonts:
+        - asset: assets/fonts/Pacifico/Pacifico-Regular.ttf
+    - family: Playwrite
+      fonts:
+        - asset: assets/fonts/Playwrite/PlaywriteDEGrund-Regular.ttf
     - family: NunitoSans
       fonts:
         - asset: assets/fonts/Nunito-Sans/NunitoSans-Light.ttf

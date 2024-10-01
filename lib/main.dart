@@ -1,6 +1,7 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/firebase_options.dart';
 import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/carousel_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/guest_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
@@ -66,6 +67,11 @@ class MyApp extends StatelessWidget {
         /// add pet to firebase provider
         ChangeNotifierProvider(
           create: (_) => AddPetToFireStoreProvider(),
+        ),
+
+        /// carousel provider
+        ChangeNotifierProvider(
+          create: (_) => CarouselProvider(),
         ),
       ],
       builder: (context, child) {

@@ -1,6 +1,11 @@
+import 'package:adoptionapp/provider/app_required_providers/carousel_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:double_tap_to_exit/double_tap_to_exit.dart';
+import 'package:flutter/services.dart';
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
-import 'package:adoptionapp/provider/screen_provider/get_started_provider.dart';
 import 'package:adoptionapp/screens/auth-screens/email_login_screen.dart';
 import 'package:adoptionapp/screens/auth-screens/email_register_screen.dart';
 import 'package:adoptionapp/screens/get_started_screens/get_started_screen1.dart';
@@ -8,11 +13,6 @@ import 'package:adoptionapp/screens/get_started_screens/get_started_screen2.dart
 import 'package:adoptionapp/screens/get_started_screens/get_started_screen3.dart';
 import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/custom_outlined_btn.dart';
-import 'package:double_tap_to_exit/double_tap_to_exit.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class GetStarted extends StatelessWidget {
   const GetStarted({super.key});
@@ -20,6 +20,7 @@ class GetStarted extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return DoubleTapToExit(
       snackBar: SnackBar(
         content: Text(
@@ -27,18 +28,19 @@ class GetStarted extends StatelessWidget {
           style: CustomTextStyles.doubleTapExitSnackBarText(context),
         ),
       ),
-      child: Consumer<GetStartedProvider>(
-        builder: (context, getStartedProvider, child) {
+      child: Consumer<CarouselProvider>(
+        // Updated to CarouselProvider
+        builder: (context, carouselProvider, child) {
           return SafeArea(
             child: Scaffold(
               body: Column(
                 children: [
-                  // Expanded widget for PageView to take remaining space
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20),
                       child: PageView(
-                        controller: getStartedProvider.pageController,
+                        controller: carouselProvider.pageController,
+                        // Updated reference
                         onPageChanged: (int page) {},
                         children: const [
                           GetStartedScreen1(),
@@ -48,7 +50,6 @@ class GetStarted extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Spacer between PageView and bottom content
                   Container(
                     margin: const EdgeInsets.only(
                       left: 20,
@@ -58,9 +59,10 @@ class GetStarted extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        /// Smooth Page Indicator
+                        // Smooth Page Indicator
                         SmoothPageIndicator(
-                          controller: getStartedProvider.pageController,
+                          controller: carouselProvider.pageController,
+                          // Updated reference
                           count: 3,
                           effect: ExpandingDotsEffect(
                             activeDotColor: AppColors.primaryColor,
@@ -75,7 +77,7 @@ class GetStarted extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            /// register btn
+                            // Register Button
                             Expanded(
                               child: CustomBtn(
                                 btnOnTap: () {
@@ -93,7 +95,7 @@ class GetStarted extends StatelessWidget {
                             ),
                             SizedBox(width: size.width * 0.05),
 
-                            /// login btn
+                            // Login Button
                             Expanded(
                               child: CustomOutlinedBtn(
                                 btnOnTap: () {
