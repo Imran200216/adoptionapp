@@ -4,6 +4,7 @@ import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/pet_description_content.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PetDescriptionScreen extends StatelessWidget {
@@ -287,8 +288,12 @@ class PetDescriptionScreen extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
+                                  /// calling phone number functionality
                                   CircularIconBtn(
-                                    onTap: () {},
+                                    onTap: () {
+                                      FlutterPhoneDirectCaller.callNumber(
+                                          "+919677588696");
+                                    },
                                     btnIcon: Icons.phone,
                                   ),
                                   SizedBox(
