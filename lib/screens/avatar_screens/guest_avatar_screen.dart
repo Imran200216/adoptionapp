@@ -7,26 +7,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-class GuestAvatarScreen extends StatefulWidget {
+class GuestAvatarScreen extends StatelessWidget {
   const GuestAvatarScreen({super.key});
-
-  @override
-  _GuestAvatarScreenState createState() => _GuestAvatarScreenState();
-}
-
-class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
-  String? _selectedAvatarUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch avatars when the screen is initialized
-    Future.microtask(() =>
-        Provider.of<GuestAvatarProvider>(context, listen: false)
-            .fetchAvatars());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +34,6 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
               btnText: "Next",
               btnBorderRadius: 4,
               btnOnTap: () {
-                /// moving to the next screen is nickname screen
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
                   return const GuestNickNameScreen();
@@ -88,9 +73,7 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                           fontFamily: "NunitoSans",
                         ),
                       ),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
+                      SizedBox(height: size.height * 0.02),
                       AutoSizeText(
                         textAlign: TextAlign.start,
                         'Personalize your profile by choosing from a collection of unique avatars. Stand out with fun and expressive icons that match your style.',
@@ -102,11 +85,9 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                           fontFamily: "NunitoSans",
                         ),
                       ),
-                      SizedBox(
-                        height: size.height * 0.04,
-                      ),
+                      SizedBox(height: size.height * 0.04),
 
-                      /// avatar added functionality
+                      // Avatar placeholder
                       SizedBox(
                         height: size.height * 0.4,
                         width: size.width,
@@ -114,45 +95,75 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                           color: Colors.grey.shade400,
                           strokeWidth: 1.2,
                           dashPattern: const [8, 4],
-                          borderType: BorderType.RRect,
+                          borderType: BorderType.Circle,
                           radius: const Radius.circular(20),
                           child: Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
+                              shape: BoxShape.circle,
                               color: Colors.grey.shade200,
                             ),
                             child: Center(
-                              child: SvgPicture.asset(
-                                "assets/images/svg/add-person-icon.svg",
-                                height: size.height * 0.28,
-                                fit: BoxFit.cover,
-                                color: Colors.grey.shade300,
-                              ),
+                              child:
+                                  guestAvatarProvider.selectedAvatarUrl != null
+                                      ? CachedNetworkImage(
+                                          imageUrl: guestAvatarProvider
+                                              .selectedAvatarUrl!,
+                                          height: size.height * 0.4,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              LoadingAnimationWidget
+                                                  .threeRotatingDots(
+                                            color: AppColors.primaryColor,
+                                            size: size.width * 0.03,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              SvgPicture.asset(
+                                            "assets/images/svg/add-person-icon.svg",
+                                            height: size.height * 0.28,
+                                            fit: BoxFit.cover,
+                                            color: Colors.grey.shade300,
+                                          ),
+                                        )
+                                      : SvgPicture.asset(
+                                          "assets/images/svg/add-person-icon.svg",
+                                          height: size.height * 0.28,
+                                          fit: BoxFit.cover,
+                                          color: Colors.grey.shade300,
+                                        ),
                             ),
                           ),
                         ),
                       ),
 
-                      SizedBox(
-                        height: size.height * 0.06,
-                      ),
+                      SizedBox(height: size.height * 0.06),
 
-                      /// some cool avatars
+                      // Cool avatars list
                       SizedBox(
                         height: size.height * 0.09,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: 12,
+                          itemCount: guestAvatarProvider.imageUrls.length,
                           itemBuilder: (context, index) {
+                            final avatarUrl =
+                                guestAvatarProvider.imageUrls[index];
                             return InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                guestAvatarProvider.setSelectedAvatar(
+                                  avatarUrl,
+                                ); // Set the selected avatar URL
+                              },
                               child: Container(
                                 height: size.height * 0.09,
                                 width: size.width * 0.2,
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(4),
+                                  shape: BoxShape.circle,
                                   color: Colors.grey.shade200,
+                                  image: DecorationImage(
+                                    image:
+                                        CachedNetworkImageProvider(avatarUrl),
+                                    // Use CachedNetworkImageProvider
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             );

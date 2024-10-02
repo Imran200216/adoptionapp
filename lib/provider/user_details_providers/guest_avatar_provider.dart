@@ -12,7 +12,15 @@ class GuestAvatarProvider extends ChangeNotifier {
   List<String> _imageUrls = [];
   String? _nickname;
   String? _avatarPhotoURL;
-  String? selectedAvatarURL;
+  String? _selectedAvatarUrl;
+
+  String? get selectedAvatarUrl =>
+      _selectedAvatarUrl; // Getter for selected avatar URL
+
+  void setSelectedAvatar(String avatarUrl) {
+    _selectedAvatarUrl = avatarUrl; // Set the selected avatar URL
+    notifyListeners(); // Notify listeners to rebuild the UI
+  }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final bool _isLoading = false;
@@ -47,8 +55,9 @@ class GuestAvatarProvider extends ChangeNotifier {
   }
 
   // Set selected avatar and update in Firestore
-  Future<void> setSelectedAvatar(String avatarUrl, BuildContext context) async {
-    selectedAvatarURL = avatarUrl;
+  Future<void> updateSelectedAvatar(
+      String avatarUrl, BuildContext context) async {
+    _selectedAvatarUrl = avatarUrl; // Set the selected avatar URL
     notifyListeners(); // Update the UI immediately
 
     final User? user = FirebaseAuth.instance.currentUser;
@@ -102,7 +111,7 @@ class GuestAvatarProvider extends ChangeNotifier {
     }
   }
 
-  GuestUserDetailsProvider() {
+  GuestAvatarProvider() {
     fetchGuestUserDetails();
   }
 
@@ -120,7 +129,7 @@ class GuestAvatarProvider extends ChangeNotifier {
         if (userDoc.exists) {
           String newNickname = userDoc['nickName'] ?? 'No nickname';
           String newAvatarURL = userDoc['avatarPhotoURL'] ??
-              'https://example.com/default-avatar.png'; // Fallback URL
+              'https://imgs.search.brave.com/uLARhH16ug7xgUl3msl3yHs0DCWkofOAnLVeWQ-poy0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/a2luZHBuZy5jb20v/cGljYy9tLzI1Mi0y/NTI0Njk1X2R1bW15/LXByb2ZpbGUtaW1h/Z2UtanBnLWhkLXBu/Zy1kb3dubG9hZC5w/bmc'; // Fallback URL
 
           // Only notify listeners if there is a change
           if (newNickname != _nickname || newAvatarURL != _avatarPhotoURL) {
@@ -143,7 +152,7 @@ class GuestAvatarProvider extends ChangeNotifier {
 
   // Clear selected avatar
   void clearSelectedAvatar() {
-    selectedAvatarURL = null;
+    _selectedAvatarUrl = null; // Use the correct variable name
     _isAvatarUpdated = false;
     notifyListeners();
   }
