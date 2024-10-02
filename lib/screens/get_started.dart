@@ -30,7 +30,11 @@ class GetStarted extends StatelessWidget {
       ),
       child: Consumer<CarouselProvider>(
         // Updated to CarouselProvider
-        builder: (context, carouselProvider, child) {
+        builder: (
+          context,
+          carouselProvider,
+          child,
+        ) {
           return SafeArea(
             child: Scaffold(
               body: Column(

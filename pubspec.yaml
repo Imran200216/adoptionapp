@@ -57,6 +57,7 @@ dependencies:
   animations: ^2.0.11
   dotted_border: ^2.1.0
   animated_text_kit: ^4.2.2
+  liquid_pull_refresh: ^1.0.6
 
 
 

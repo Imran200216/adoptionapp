@@ -49,7 +49,7 @@ class CustomTextStyles {
   static TextStyle getStartedSubTitleText(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return TextStyle(
-      fontSize: screenWidth * 0.04,
+      fontSize: screenWidth * 0.05,
       fontWeight: FontWeight.w500,
       fontFamily: "NunitoSans",
       color: AppColors.subTitleColor,

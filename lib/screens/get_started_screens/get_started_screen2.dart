@@ -1,5 +1,6 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -64,9 +65,10 @@ class GetStartedScreen2 extends StatelessWidget {
           ),
 
           /// sub title
-          Text(
+          AutoSizeText(
             textAlign: TextAlign.center,
-            "Be a hero in an animal's life by offering them a forever home. From playful puppies to calm senior pets, we have the perfect companion for you.",
+            "Join us in giving these wonderful animals a loving home. Browse through our furry, feathered, and scaly friends to find your next family member.",
+            maxLines: 3,
             style: CustomTextStyles.getStartedSubTitleText(context),
           ),
         ],

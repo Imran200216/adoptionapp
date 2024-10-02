@@ -1,11 +1,13 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/user_details_providers/guest_avatar_provider.dart';
+import 'package:adoptionapp/screens/nick_name_screens/guest_nick_name_screen.dart';
+import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:double_tap_to_exit/double_tap_to_exit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class GuestAvatarScreen extends StatefulWidget {
   const GuestAvatarScreen({super.key});
@@ -30,139 +32,144 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return SafeArea(
-      child: Scaffold(
-        body: Consumer<GuestAvatarProvider>(
-          builder: (
-            context,
-            guestAvatarProvider,
-            child,
-          ) {
-            return Container(
-              margin: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                bottom: 30,
-                top: 30,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AutoSizeText(
-                    textAlign: TextAlign.start,
-                    'Add Avatars',
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: size.width * 0.062,
-                      color: AppColors.blackColor,
-                      fontFamily: "NunitoSans",
-                    ),
+    return DoubleTapToExit(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: AppColors.secondaryColor,
+          bottomSheet: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.zero,
+              color: AppColors.secondaryColor,
+            ),
+            child: CustomIconBtn(
+              btnHeight: size.height * 0.06,
+              btnWidth: size.width,
+              btnText: "Next",
+              btnBorderRadius: 4,
+              btnOnTap: () {
+                /// moving to the next screen is nickname screen
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                  return const GuestNickNameScreen();
+                }));
+              },
+              btnIcon: Icons.navigate_next_outlined,
+              btnColor: AppColors.primaryColor,
+              btnTextColor: AppColors.secondaryColor,
+              btnIconColor: AppColors.secondaryColor,
+            ),
+          ),
+          body: Consumer<GuestAvatarProvider>(
+            builder: (
+              context,
+              guestAvatarProvider,
+              child,
+            ) {
+              return SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom: 30,
+                    top: 30,
                   ),
-                  SizedBox(
-                    height: size.height * 0.04,
-                  ),
-                  // Display selected avatar or placeholder
-                  Container(
-                    height: size.height * 0.40,
-                    width: size.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey.shade200,
-                    ),
-                    child: Center(
-                      child: _selectedAvatarUrl == null
-                          ? SvgPicture.asset(
-                              "assets/images/svg/add-person-icon.svg",
-                              height: size.height * 0.30,
-                              fit: BoxFit.cover,
-                              color: AppColors.subTitleColor,
-                            )
-                          : ClipRRect(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AutoSizeText(
+                        textAlign: TextAlign.start,
+                        'Add Cool Avatars',
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: size.width * 0.060,
+                          color: AppColors.blackColor,
+                          fontFamily: "NunitoSans",
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+                      AutoSizeText(
+                        textAlign: TextAlign.start,
+                        'Personalize your profile by choosing from a collection of unique avatars. Stand out with fun and expressive icons that match your style.',
+                        maxLines: 4,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: size.width * 0.042,
+                          color: AppColors.subTitleColor,
+                          fontFamily: "NunitoSans",
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.04,
+                      ),
+
+                      /// avatar added functionality
+                      SizedBox(
+                        height: size.height * 0.4,
+                        width: size.width,
+                        child: DottedBorder(
+                          color: Colors.grey.shade400,
+                          strokeWidth: 1.2,
+                          dashPattern: const [8, 4],
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(20),
+                          child: Container(
+                            decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                imageUrl: _selectedAvatarUrl!,
-                                height: size.height * 0.40,
-                                width: size.width,
+                              color: Colors.grey.shade200,
+                            ),
+                            child: Center(
+                              child: SvgPicture.asset(
+                                "assets/images/svg/add-person-icon.svg",
+                                height: size.height * 0.28,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    LoadingAnimationWidget.discreteCircle(
-                                  color: AppColors.primaryColor,
-                                  size: size.width * 0.08,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+                                color: Colors.grey.shade300,
                               ),
                             ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.04,
-                  ),
-                  // Check if loading
-                  guestAvatarProvider.isLoading
-                      ? Center(
-                          child: LoadingAnimationWidget.discreteCircle(
-                            color: AppColors.primaryColor,
-                            size: size.width * 0.04,
-                          ),
-                        )
-                      : Expanded(
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: guestAvatarProvider.imageUrls.length,
-                            separatorBuilder: (context, index) =>
-                                SizedBox(width: size.width * 0.04),
-                            // Add space between avatars
-                            itemBuilder: (context, index) {
-                              String avatarUrl =
-                                  guestAvatarProvider.imageUrls[index];
-
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedAvatarUrl = avatarUrl;
-                                  });
-
-                                  // Set the selected avatar and update Firestore
-                                  guestAvatarProvider.setSelectedAvatar(
-                                      avatarUrl, context);
-                                },
-                                child: Container(
-                                  width: size.width * 0.20, // Set avatar size
-                                  height: size.width * 0.20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: _selectedAvatarUrl == avatarUrl
-                                          ? AppColors
-                                              .primaryColor // Highlight selected avatar
-                                          : Colors.transparent,
-                                      width: 3,
-                                    ),
-                                  ),
-                                  child: ClipOval(
-                                    child: CachedNetworkImage(
-                                      imageUrl: avatarUrl,
-                                      placeholder: (context, url) =>
-                                          LoadingAnimationWidget.discreteCircle(
-                                        color: AppColors.primaryColor,
-                                        size: size.width * 0.08,
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
                           ),
                         ),
-                ],
-              ),
-            );
-          },
+                      ),
+
+                      SizedBox(
+                        height: size.height * 0.06,
+                      ),
+
+                      /// some cool avatars
+                      SizedBox(
+                        height: size.height * 0.09,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 12,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {},
+                              child: Container(
+                                height: size.height * 0.09,
+                                width: size.width * 0.2,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Colors.grey.shade200,
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return SizedBox(
+                              width: size.width * 0.02,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
