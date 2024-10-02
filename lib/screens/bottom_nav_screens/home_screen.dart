@@ -2,6 +2,7 @@ import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/pet_card.dart';
+import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -142,13 +143,28 @@ class HomeScreen extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: 24,
                       itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context){
-                              return const  PetDescriptionScreen();
-                            }));
+                        return OpenContainer(
+                          transitionType: ContainerTransitionType.fade,
+                          transitionDuration: const Duration(milliseconds: 800),
+                          openBuilder: (BuildContext context, VoidCallback _) {
+                            return const PetDescriptionScreen();
                           },
-                          child: const PetCard(),
+                          closedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              15.0,
+                            ),
+                          ),
+                          closedElevation: 0.0,
+                          openElevation: 0.0,
+                          closedColor: AppColors.secondaryColor,
+                          openColor: AppColors.secondaryColor,
+                          closedBuilder: (BuildContext context,
+                              VoidCallback openContainer) {
+                            return InkWell(
+                              onTap: openContainer,
+                              child: const PetCard(),
+                            );
+                          },
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {

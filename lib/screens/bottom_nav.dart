@@ -65,11 +65,11 @@ class BottomNavBar extends StatelessWidget {
                   backgroundColor: AppColors.primaryColor,
                   currentIndex: bottomNavProvider.currentIndex,
                   selectedItemColor: AppColors.primaryColor,
-                  unselectedItemColor: AppColors.subTitleColor,
+                  unselectedItemColor: AppColors.secondaryColor,
                   unselectedLabelStyle: TextStyle(
                     fontFamily: "NunitoSans",
                     fontWeight: FontWeight.w600,
-                    color: AppColors.subTitleColor,
+                    color: AppColors.secondaryColor,
                   ),
                   selectedLabelStyle: TextStyle(
                     fontFamily: "NunitoSans",
@@ -84,8 +84,9 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 0
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 30,
-                        width: 30,
+                        height: size.height * 0.03,
+                        width: size.width * 0.03,
+                        fit: BoxFit.cover,
                       ),
                       label: 'Home',
                     ),
@@ -95,8 +96,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 1
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 26,
-                        width: 26,
+                        height: size.height * 0.026,
+                        width: size.width * 0.026,
                         fit: BoxFit.cover,
                       ),
                       label: 'Favorites',
@@ -107,8 +108,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 2
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 34,
-                        width: 34,
+                        height: size.height * 0.034,
+                        width: size.width * 0.034,
                         fit: BoxFit.cover,
                       ),
                       label: 'Add',
@@ -119,8 +120,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 3
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 30,
-                        width: 30,
+                        height: size.height * 0.03,
+                        width: size.width * 0.03,
                         fit: BoxFit.cover,
                       ),
                       label: 'Chats',
@@ -131,8 +132,8 @@ class BottomNavBar extends StatelessWidget {
                         color: bottomNavProvider.currentIndex == 4
                             ? AppColors.primaryColor
                             : AppColors.subTitleColor,
-                        height: 30,
-                        width: 30,
+                        height: size.height * 0.034,
+                        width: size.width * 0.034,
                         fit: BoxFit.cover,
                       ),
                       label: 'Profile',

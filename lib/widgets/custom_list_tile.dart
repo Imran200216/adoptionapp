@@ -26,8 +26,8 @@ class CustomListTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 0),
         leading: Container(
-          height: size.height * 0.16,
-          width: size.width * 0.16,
+          height: size.height * 0.14,
+          width: size.width * 0.14,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: leadingListTileBgColor,
@@ -36,14 +36,14 @@ class CustomListTile extends StatelessWidget {
             child: SvgPicture.asset(
               "assets/images/svg/$leadingListTilePath.svg",
               color: AppColors.blackColor,
-              height: size.height * 0.038,
+              height: size.height * 0.034,
               fit: BoxFit.cover,
             ),
           ),
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          size: size.width * 0.06,
+          size: size.width * 0.05,
           color: AppColors.blackColor,
         ),
         title: Text(listTileText),

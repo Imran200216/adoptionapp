@@ -123,7 +123,7 @@ class CustomTextStyles {
   static TextStyle profileListTileText(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return TextStyle(
-      fontSize: screenWidth * 0.050,
+      fontSize: screenWidth * 0.046,
       fontWeight: FontWeight.w700,
       fontFamily: "NunitoSans",
       color: AppColors.blackColor,
