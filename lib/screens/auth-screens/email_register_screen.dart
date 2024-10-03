@@ -1,14 +1,15 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
+import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/screens/auth-screens/email_login_screen.dart';
-import 'package:adoptionapp/screens/avatar_screens/guest_avatar_screen.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_password_textfield.dart';
 import 'package:adoptionapp/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class EmailRegisterScreen extends StatelessWidget {
@@ -19,10 +20,12 @@ class EmailRegisterScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body: Consumer<EmailAuthenticationProvider>(
+        body:
+            Consumer2<EmailAuthenticationProvider, GuestAuthenticationProvider>(
           builder: (
             context,
             emailAuthProvider,
+            guestAuthProvider,
             child,
           ) {
             return SingleChildScrollView(
@@ -157,23 +160,27 @@ class EmailRegisterScreen extends StatelessWidget {
                     ),
 
                     /// guest tbn
-                    CustomIconBtn(
-                      btnTextColor: AppColors.blackColor,
-                      btnIconColor: AppColors.blackColor,
-                      btnColor: AppColors.guestBtnColor,
-                      btnHeight: size.height * 0.06,
-                      btnWidth: size.width,
-                      btnText: "Register with guest",
-                      btnBorderRadius: 4,
-                      btnOnTap: () {
-                        HapticFeedback.heavyImpact();
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const GuestAvatarScreen();
-                        }));
-                      },
-                      btnIcon: Icons.person,
-                    ),
+                    guestAuthProvider.isLoading
+                        ? Center(
+                          child: LoadingAnimationWidget.discreteCircle(
+                              color: AppColors.primaryColor,
+                              size: size.width * 0.08,
+                            ),
+                        )
+                        : CustomIconBtn(
+                            btnTextColor: AppColors.blackColor,
+                            btnIconColor: AppColors.blackColor,
+                            btnColor: AppColors.guestBtnColor,
+                            btnHeight: size.height * 0.06,
+                            btnWidth: size.width,
+                            btnText: "Register with guest",
+                            btnBorderRadius: 4,
+                            btnOnTap: () {
+                              HapticFeedback.heavyImpact();
+                              guestAuthProvider.signInWithGuest(context);
+                            },
+                            btnIcon: Icons.person,
+                          ),
 
                     SizedBox(
                       height: size.height * 0.02,

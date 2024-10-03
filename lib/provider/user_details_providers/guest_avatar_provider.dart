@@ -1,29 +1,23 @@
 import 'package:adoptionapp/helper/debounce_helper.dart';
+import 'package:adoptionapp/screens/bottom_nav.dart';
 import 'package:adoptionapp/widgets/toast_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class GuestAvatarProvider extends ChangeNotifier {
+
+class GuestUserDetailsProvider extends ChangeNotifier {
   /// debounce mechanism
   final DebounceHelper debounceHelper = DebounceHelper();
 
   List<String> _imageUrls = [];
   String? _nickname;
   String? _avatarPhotoURL;
-  String? _selectedAvatarUrl;
-
-  String? get selectedAvatarUrl =>
-      _selectedAvatarUrl; // Getter for selected avatar URL
-
-  void setSelectedAvatar(String avatarUrl) {
-    _selectedAvatarUrl = avatarUrl; // Set the selected avatar URL
-    notifyListeners(); // Notify listeners to rebuild the UI
-  }
+  String? selectedAvatarURL;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final bool _isLoading = false;
+  bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
@@ -55,9 +49,8 @@ class GuestAvatarProvider extends ChangeNotifier {
   }
 
   // Set selected avatar and update in Firestore
-  Future<void> updateSelectedAvatar(
-      String avatarUrl, BuildContext context) async {
-    _selectedAvatarUrl = avatarUrl; // Set the selected avatar URL
+  Future<void> setSelectedAvatar(String avatarUrl, BuildContext context) async {
+    selectedAvatarURL = avatarUrl;
     notifyListeners(); // Update the UI immediately
 
     final User? user = FirebaseAuth.instance.currentUser;
@@ -111,7 +104,83 @@ class GuestAvatarProvider extends ChangeNotifier {
     }
   }
 
-  GuestAvatarProvider() {
+  // Controller for nickname TextField
+  final TextEditingController nicknameControllerByGuest =
+  TextEditingController();
+
+  // Set nickname and update in Firestore
+  Future<void> setNickname(BuildContext context) async {
+    final nickName = nicknameControllerByGuest.text.trim();
+
+    if (nickName.isEmpty) {
+      // Check for debouncing for error toast
+      if (!debounceHelper.isDebounced()) {
+        debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Nickname cannot be empty!",
+        );
+      }
+      return;
+    }
+
+    _isLoading = true; // Start loading
+    notifyListeners(); // Notify UI to show progress indicator
+
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null && user.isAnonymous) {
+      String uid = user.uid;
+
+      try {
+        // Update Firestore with the new nickname
+        await _firestore.collection('userByGuestAuth').doc(uid).set({
+          'nickName': nickName,
+        }, SetOptions(merge: true)).then((value) async {
+          // Check for debouncing for success toast
+          if (!debounceHelper.isDebounced()) {
+            debounceHelper.activateDebounce(
+                duration: const Duration(seconds: 2));
+            ToastHelper.showSuccessToast(
+              context: context,
+              message: "Nickname updated successfully!",
+            );
+          }
+
+          // Navigate to BottomNavBar
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+                return BottomNavBar();
+              }));
+        });
+      } catch (e) {
+        // Check for debouncing for error toast
+        if (!debounceHelper.isDebounced()) {
+          debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
+          ToastHelper.showErrorToast(
+            context: context,
+            message: "Failed to update nickname.",
+          );
+        }
+        print('Error updating nickname: $e');
+      } finally {
+        _isLoading = false; // Stop loading
+        notifyListeners(); // Notify UI to hide progress indicator
+      }
+    } else {
+      // Check for debouncing for error toast
+      if (!debounceHelper.isDebounced()) {
+        debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "No user signed in.",
+        );
+      }
+      print('No user signed in');
+    }
+  }
+
+  GuestUserDetailsProvider() {
     fetchGuestUserDetails();
   }
 
@@ -124,12 +193,12 @@ class GuestAvatarProvider extends ChangeNotifier {
 
       try {
         DocumentSnapshot userDoc =
-            await _firestore.collection('userByGuestAuth').doc(uid).get();
+        await _firestore.collection('userByGuestAuth').doc(uid).get();
 
         if (userDoc.exists) {
           String newNickname = userDoc['nickName'] ?? 'No nickname';
           String newAvatarURL = userDoc['avatarPhotoURL'] ??
-              'https://imgs.search.brave.com/uLARhH16ug7xgUl3msl3yHs0DCWkofOAnLVeWQ-poy0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/a2luZHBuZy5jb20v/cGljYy9tLzI1Mi0y/NTI0Njk1X2R1bW15/LXByb2ZpbGUtaW1h/Z2UtanBnLWhkLXBu/Zy1kb3dubG9hZC5w/bmc'; // Fallback URL
+              'https://example.com/default-avatar.png'; // Fallback URL
 
           // Only notify listeners if there is a change
           if (newNickname != _nickname || newAvatarURL != _avatarPhotoURL) {
@@ -152,7 +221,7 @@ class GuestAvatarProvider extends ChangeNotifier {
 
   // Clear selected avatar
   void clearSelectedAvatar() {
-    _selectedAvatarUrl = null; // Use the correct variable name
+    selectedAvatarURL = null;
     _isAvatarUpdated = false;
     notifyListeners();
   }

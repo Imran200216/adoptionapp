@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-class EmailAvatarProvider extends ChangeNotifier {
+class EmailUserDetailsProvider extends ChangeNotifier {
   /// debounce mechanism
   final DebounceHelper debounceHelper = DebounceHelper();
 
