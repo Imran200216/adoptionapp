@@ -1,7 +1,9 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/firebase_options.dart';
 import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/app_version_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/carousel_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/in_app_review_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
@@ -90,6 +92,16 @@ class MyApp extends StatelessWidget {
         /// phone call provider
         ChangeNotifierProvider(
           create: (_) => PhoneCallProvider(),
+        ),
+
+        /// app version provider
+        ChangeNotifierProvider(
+          create: (_) => AppVersionProvider(),
+        ),
+
+        /// in app review provider
+        ChangeNotifierProvider(
+          create: (_) => InAppReviewProvider(),
         ),
       ],
       builder: (context, child) {

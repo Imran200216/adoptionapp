@@ -133,13 +133,14 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.circular(14),
+                        color: Colors.grey.shade400,
                         image: DecorationImage(
                           image: userGuestDetailsProvider.selectedAvatarURL !=
                                   null
                               ? CachedNetworkImageProvider(
                                   userGuestDetailsProvider.selectedAvatarURL!)
                               : const AssetImage(
-                                  "assets/images/png/avatar-bg-img.png"),
+                                  "assets/images/png/add-avatar.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -153,8 +154,8 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                           children: [
                             SizedBox(height: size.height * 0.02),
                             Lottie.asset(
-                              'assets/lottie/empty-animation.json',
-                              height: size.height * 0.3,
+                              'assets/lotties/empty-animation.json',
+                              height: size.height * 0.03,
                               fit: BoxFit.cover,
                             ),
                           ],
@@ -197,7 +198,7 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                                             child: LoadingAnimationWidget
                                                 .threeArchedCircle(
                                               color: AppColors.primaryColor,
-                                              size: size.width * 0.20,
+                                              size: size.width * 0.04,
                                             ),
                                           ),
                                           errorWidget: (context, url, error) =>
