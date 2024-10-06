@@ -17,6 +17,42 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   TextEditingController petOwnerNameController =
       TextEditingController(); // Added for pet owner name
 
+  //////////// adding the radios/////////////////////
+  String _selectedPetType = 'Dog';
+  String _selectedPetAge = 'Puppy';
+  String _selectedGender = 'male';
+  String _vaccinationStatus = 'Vaccination Done';
+
+  String get selectedPetType => _selectedPetType;
+
+  String get selectedPetAge => _selectedPetAge;
+
+  String get selectedGender => _selectedGender;
+
+  String get vaccinationStatus => _vaccinationStatus;
+
+  void setPetType(String value) {
+    _selectedPetType = value;
+    notifyListeners();
+  }
+
+  void setPetAge(String value) {
+    _selectedPetAge = value;
+    notifyListeners();
+  }
+
+  void setGender(String value) {
+    _selectedGender = value;
+    notifyListeners();
+  }
+
+  void setVaccinationStatus(String value) {
+    _vaccinationStatus = value;
+    notifyListeners();
+  }
+
+  /////////////////////////////////////////
+
   /// Dropdown values for pet gender
   String? valuePetGender;
   final List<String> listPetGender = ["Male", "Female"];

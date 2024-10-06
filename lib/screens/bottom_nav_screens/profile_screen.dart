@@ -11,7 +11,7 @@ import 'package:adoptionapp/screens/profile_sub_screens/app_information_screen.d
 import 'package:adoptionapp/screens/profile_sub_screens/edit_profile_screen.dart';
 import 'package:adoptionapp/widgets/custom_list_tile.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-    import 'package:avatar_glow/avatar_glow.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -150,17 +150,27 @@ class ProfileScreen extends StatelessWidget {
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    Text(
-                      "Imran B",
-                      style: CustomTextStyles.profileTitleText(context),
-                    ),
+
+                    user.isAnonymous
+                        ? Text(
+                            guestUserDetailsProvider.nickname ?? "No User",
+                            style: CustomTextStyles.profileTitleText(context),
+                          )
+                        : Text(
+                            user.displayName ?? "No User",
+                            style: CustomTextStyles.profileTitleText(context),
+                          ),
                     SizedBox(
                       height: size.height * 0.01,
                     ),
-                    Text(
-                      "imran@gmail.com",
-                      style: CustomTextStyles.profileSubTitleText(context),
-                    ),
+
+                    user.isAnonymous
+                        ? const SizedBox.shrink()
+                        : Text(
+                            user.email ?? "No email Address",
+                            style:
+                                CustomTextStyles.profileSubTitleText(context),
+                          ),
                     SizedBox(
                       height: size.height * 0.04,
                     ),

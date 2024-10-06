@@ -124,7 +124,7 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     dashPattern: const [6, 6],
-                    color: Colors.grey.shade500,
+                    color: Colors.grey.shade300,
                     radius: const Radius.circular(12),
                     strokeWidth: 2,
                     child: Container(
@@ -139,8 +139,9 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                                   null
                               ? CachedNetworkImageProvider(
                                   userGuestDetailsProvider.selectedAvatarURL!)
-                              : const AssetImage(
-                                  "assets/images/png/add-avatar.png"),
+                              : const NetworkImage(
+                                  "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
+                                ),
                           fit: BoxFit.cover,
                         ),
                       ),
