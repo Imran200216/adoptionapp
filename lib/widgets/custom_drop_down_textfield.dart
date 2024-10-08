@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:adoptionapp/constants/colors.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Import if you use SVG icons
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomDropdown<T> extends StatelessWidget {
   final List<T> items;

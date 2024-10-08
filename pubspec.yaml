@@ -62,6 +62,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.1
   package_info_plus: ^8.0.2
   in_app_review: ^2.0.9
+  insta_image_viewer: ^1.0.4
 
 
 
