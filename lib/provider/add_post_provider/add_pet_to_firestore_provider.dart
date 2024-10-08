@@ -32,8 +32,11 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
 
   // Getters for selected values
   String get selectedPetType => _selectedPetType;
+
   String get selectedGender => _selectedGender;
+
   String get vaccinationStatus => _vaccinationStatus;
+
   int get selectedPetAge => _selectedPetAge;
 
   // Methods for setting values
@@ -78,13 +81,14 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   }
 
   // Method to upload images to Firebase Storage and return the list of URLs
-  Future<List<String>> uploadImages(String petName, BuildContext context) async {
+  Future<List<String>> uploadImages(
+      String petName, BuildContext context) async {
     List<String> imageUrls = [];
 
     for (File image in petImages) {
       try {
         Reference storageRef =
-        _storage.ref().child('pets/$petName/${DateTime.now()}.jpg');
+            _storage.ref().child('pets/$petName/${DateTime.now()}.jpg');
         UploadTask uploadTask = storageRef.putFile(image);
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -117,6 +121,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petDescription.isEmpty ||
         petAge <= 0 ||
         petWeight <= 0 ||
+        petLocation.isEmpty ||
+        petOwnerPhone.isEmpty ||
         petImages.isEmpty ||
         petOwnerName.isEmpty) {
       ToastHelper.showErrorToast(

@@ -242,7 +242,6 @@ class AddPetContent extends StatelessWidget {
                                 }
                               },
                               hintText: "Pet age",
-                              dropdownIconPath: "arrow-down-icon",
                               prefixIconPath: "pet-age-icon",
                             ),
 

@@ -7,7 +7,7 @@ class CustomDropdown<T> extends StatelessWidget {
   final T? selectedItem;
   final String hintText;
   final String prefixIconPath; // Added for prefix icon
-  final String dropdownIconPath; // Dropdown icon for the button
+
   final Function(T?)? onChanged;
 
   const CustomDropdown({
@@ -16,7 +16,7 @@ class CustomDropdown<T> extends StatelessWidget {
     required this.selectedItem,
     required this.hintText,
     required this.prefixIconPath, // Added parameter
-    required this.dropdownIconPath, // Change to accept SVG path for dropdown icon
+
     this.onChanged,
   });
 
@@ -26,14 +26,10 @@ class CustomDropdown<T> extends StatelessWidget {
     return DropdownButtonFormField<T>(
       value: selectedItem,
       onChanged: onChanged,
-      icon: Padding(
-        padding: const EdgeInsets.all(12.0), // Adjust padding to fit the icon size
-        child: SvgPicture.asset(
-          "assets/images/svg/$dropdownIconPath.svg", // Use the provided SVG path
-          color: AppColors.subTitleColor,
-          height: 24,
-          width: 24, // Adjust the width if needed
-        ),
+      icon: Icon(
+        Icons.arrow_drop_down_circle,
+        color: AppColors.primaryColor,
+        size: size.width * 0.06,
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -46,9 +42,11 @@ class CustomDropdown<T> extends StatelessWidget {
         filled: true,
         fillColor: Colors.white,
         prefixIcon: Padding(
-          padding: const EdgeInsets.all(12.0), // Adjust padding to fit the icon size
+          padding: const EdgeInsets.all(12.0),
+          // Adjust padding to fit the icon size
           child: SvgPicture.asset(
-            "assets/images/svg/$prefixIconPath.svg", // Use the provided SVG path for prefix icon
+            "assets/images/svg/$prefixIconPath.svg",
+            // Use the provided SVG path for prefix icon
             color: AppColors.primaryColor,
             height: 24,
             width: 24, // Adjust the width if needed
