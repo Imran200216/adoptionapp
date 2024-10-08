@@ -6,6 +6,7 @@ import 'package:adoptionapp/provider/app_required_providers/carousel_provider.da
 import 'package:adoptionapp/provider/app_required_providers/in_app_review_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/scroll_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/password_visibility_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
@@ -18,6 +19,7 @@ import 'package:adoptionapp/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,18 +105,25 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => InAppReviewProvider(),
         ),
+
+        /// scroll provider
+        ChangeNotifierProvider(
+          create: (_) => ScrollProvider(),
+        ),
       ],
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: AppColors.primaryColor,
+        return ToastificationWrapper(
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColors.primaryColor,
+              ),
+              useMaterial3: true,
             ),
-            useMaterial3: true,
+            home: const SplashScreen(),
           ),
-          home: const SplashScreen(),
         );
       },
     );

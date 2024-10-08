@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Import if you use SVG icons
 
 class CustomDropdown<T> extends StatelessWidget {
   final List<T> items;
   final T? selectedItem;
   final String hintText;
-  final IconData dropdownIcon;
+  final String prefixIconPath; // Added for prefix icon
+  final String dropdownIconPath; // Dropdown icon for the button
   final Function(T?)? onChanged;
 
   const CustomDropdown({
@@ -13,7 +15,8 @@ class CustomDropdown<T> extends StatelessWidget {
     required this.items,
     required this.selectedItem,
     required this.hintText,
-    required this.dropdownIcon,
+    required this.prefixIconPath, // Added parameter
+    required this.dropdownIconPath, // Change to accept SVG path for dropdown icon
     this.onChanged,
   });
 
@@ -23,30 +26,55 @@ class CustomDropdown<T> extends StatelessWidget {
     return DropdownButtonFormField<T>(
       value: selectedItem,
       onChanged: onChanged,
-      icon: Icon(
-        dropdownIcon,
-        color: AppColors.subTitleColor,
+      icon: Padding(
+        padding: const EdgeInsets.all(12.0), // Adjust padding to fit the icon size
+        child: SvgPicture.asset(
+          "assets/images/svg/$dropdownIconPath.svg", // Use the provided SVG path
+          color: AppColors.subTitleColor,
+          height: 24,
+          width: 24, // Adjust the width if needed
+        ),
       ),
       decoration: InputDecoration(
-        labelText: hintText,
-        labelStyle: TextStyle(
+        hintText: hintText,
+        hintStyle: TextStyle(
           fontSize: size.width * 0.042,
           color: AppColors.subTitleColor,
           fontWeight: FontWeight.w600,
           fontFamily: "NunitoSans",
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.subTitleColor),
-          borderRadius: BorderRadius.zero,
+        filled: true,
+        fillColor: Colors.white,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(12.0), // Adjust padding to fit the icon size
+          child: SvgPicture.asset(
+            "assets/images/svg/$prefixIconPath.svg", // Use the provided SVG path for prefix icon
+            color: AppColors.primaryColor,
+            height: 24,
+            width: 24, // Adjust the width if needed
+          ),
         ),
-        focusedBorder: UnderlineInputBorder(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: AppColors.subTitleColor,
             width: 2,
           ),
-          borderRadius: BorderRadius.zero,
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
+      dropdownColor: Colors.white,
       items: items.map((T value) {
         return DropdownMenuItem<T>(
           value: value,

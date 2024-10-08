@@ -5,9 +5,9 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
   final Function(ImageSource source) onImagePicked;
 
   const CustomImagePickerBottomSheet({
-    Key? key,
+    super.key,
     required this.onImagePicked,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,6 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
             InkWell(
               onTap: () {
                 onImagePicked(ImageSource.camera);
-
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -55,7 +54,6 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
             InkWell(
               onTap: () {
                 onImagePicked(ImageSource.gallery);
-
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:adoptionapp/constants/colors.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -26,13 +27,13 @@ class CustomRadio extends StatelessWidget {
           title,
           maxLines: 1,
           style: TextStyle(
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             fontSize: size.width * 0.040,
-            color: Colors.black,
+            color: AppColors.subTitleColor,
             fontFamily: "NunitoSans",
           ),
         ),
-        SizedBox(height: size.height * 0.01),
+        SizedBox(height: size.height * 0.02),
         Wrap(
           spacing: 10.0,
           runSpacing: 10.0,
@@ -48,20 +49,21 @@ class CustomRadio extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: selectedOption == option
-                      ? Colors.orangeAccent
-                      : Colors.white,
+                      ? AppColors.primaryColor
+                      : AppColors.secondaryColor,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
                     color: selectedOption == option
-                        ? Colors.orangeAccent
-                        : Colors.grey,
+                        ? AppColors.primaryColor
+                        : AppColors.subTitleColor,
                   ),
                 ),
                 child: Text(
                   option,
                   style: TextStyle(
-                    color:
-                        selectedOption == option ? Colors.white : Colors.black,
+                    color: selectedOption == option
+                        ? AppColors.secondaryColor
+                        : AppColors.blackColor,
                     fontWeight: FontWeight.w700,
                     fontSize: size.width * 0.035,
                     fontFamily: "NunitoSans",

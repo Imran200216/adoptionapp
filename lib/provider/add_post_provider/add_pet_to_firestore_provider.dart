@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class AddPetToFireStoreProvider extends ChangeNotifier {
-  /// TextEditingControllers for form fields
+  // TextEditingControllers for form fields
   TextEditingController petNameController = TextEditingController();
   TextEditingController petBreedController = TextEditingController();
   TextEditingController petDescriptionController = TextEditingController();
@@ -14,30 +14,36 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   TextEditingController petWeightController = TextEditingController();
   TextEditingController petLocationController = TextEditingController();
   TextEditingController petOwnerPhoneController = TextEditingController();
-  TextEditingController petOwnerNameController =
-      TextEditingController(); // Added for pet owner name
+  TextEditingController petOwnerNameController = TextEditingController();
 
-  //////////// adding the radios/////////////////////
+  // Properties for pet details
   String _selectedPetType = 'Dog';
-  String _selectedPetAge = 'Puppy';
   String _selectedGender = 'male';
   String _vaccinationStatus = 'Vaccination Done';
+  int _selectedPetAge = 1;
+  List<File> petImages = [];
 
+  // Page controller for the image slider
+  PageController pageController = PageController();
+
+  // Firebase Storage and Firestore instances
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Getters for selected values
   String get selectedPetType => _selectedPetType;
-
-  String get selectedPetAge => _selectedPetAge;
-
   String get selectedGender => _selectedGender;
-
   String get vaccinationStatus => _vaccinationStatus;
+  int get selectedPetAge => _selectedPetAge;
 
-  void setPetType(String value) {
-    _selectedPetType = value;
+  // Methods for setting values
+  void setPetAge(int value) {
+    _selectedPetAge = value;
     notifyListeners();
   }
 
-  void setPetAge(String value) {
-    _selectedPetAge = value;
+  void setPetType(String value) {
+    _selectedPetType = value;
     notifyListeners();
   }
 
@@ -51,45 +57,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /////////////////////////////////////////
-
-  /// Dropdown values for pet gender
-  String? valuePetGender;
-  final List<String> listPetGender = ["Male", "Female"];
-
-  void setPetGender(String? newValue) {
-    valuePetGender = newValue;
-    notifyListeners(); // Notify listeners of the change
-  }
-
-  /// Dropdown values for pet vaccinated
-  String? valuePetVaccinated;
-  final List<String> listPetVaccinated = ["Vaccinated", "Not Vaccinated"];
-
-  void setPetVaccinated(String? newValue) {
-    valuePetVaccinated = newValue;
-    notifyListeners(); // Notify listeners of the change
-  }
-
-  /// Dropdown values for pet category
-  String? valuePetCategory;
-  final List<String> listPetCategory = ["Dogs", "Cats", "Birds", "Others"];
-
-  void setPetCategory(String? newValue) {
-    valuePetCategory = newValue;
-    notifyListeners(); // Notify listeners of the change
-  }
-
-  /// Selected pet images
-  List<File> petImages = [];
-
-  /// Firebase Storage instance
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
-  /// Firestore instance
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  /// Method to pick an image from gallery or camera
+  // Method to pick an image from gallery or camera
   Future<void> pickImage(ImageSource source, BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile = await _picker.pickImage(source: source);
@@ -100,7 +68,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         context: context,
         message: "Image picked successfully!",
       );
-
       notifyListeners();
     } else {
       ToastHelper.showErrorToast(
@@ -110,28 +77,14 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     }
   }
 
-  // New method for the onTap callback
-  void onImageTap(ImageSource source, BuildContext context) {
-    pickImage(source, context);
-  }
-
-  int currentIndex = 0;
-
-  // Method to update the current index of the PageView
-  void updateCurrentIndex(int index) {
-    currentIndex = index;
-    notifyListeners(); // Notify listeners of the change
-  }
-
-  /// Method to upload images to Firebase Storage and return the list of URLs
-  Future<List<String>> uploadImages(
-      String petName, BuildContext context) async {
+  // Method to upload images to Firebase Storage and return the list of URLs
+  Future<List<String>> uploadImages(String petName, BuildContext context) async {
     List<String> imageUrls = [];
 
     for (File image in petImages) {
       try {
         Reference storageRef =
-            _storage.ref().child('pets/$petName/${DateTime.now()}.jpg');
+        _storage.ref().child('pets/$petName/${DateTime.now()}.jpg');
         UploadTask uploadTask = storageRef.putFile(image);
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -147,7 +100,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     return imageUrls;
   }
 
-  /// Method to add pet data to Firestore
+  // Method to add pet data to Firestore
   Future<void> addPetToFireStore(BuildContext context) async {
     String petName = petNameController.text;
     String petBreed = petBreedController.text;
@@ -156,8 +109,9 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     int petWeight = int.tryParse(petWeightController.text) ?? 0;
     String petLocation = petLocationController.text;
     String petOwnerPhone = petOwnerPhoneController.text;
-    String petOwnerName = petOwnerNameController.text; // Get pet owner name
+    String petOwnerName = petOwnerNameController.text;
 
+    // Validate the form fields
     if (petName.isEmpty ||
         petBreed.isEmpty ||
         petDescription.isEmpty ||
@@ -165,7 +119,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petWeight <= 0 ||
         petImages.isEmpty ||
         petOwnerName.isEmpty) {
-      // Validate pet owner name
       ToastHelper.showErrorToast(
         context: context,
         message: "Please fill in all fields and add at least one image.",
@@ -187,11 +140,9 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         'petWeight': petWeight,
         'petLocation': petLocation,
         'petOwnerPhoneNumber': petOwnerPhone,
-        'petOwnerName': petOwnerName, // Include pet owner name
-        'petCategory': valuePetCategory,
-        'petGender': valuePetGender,
-        'isVaccinated': valuePetVaccinated == "Vaccinated",
+        'petOwnerName': petOwnerName,
         'petImages': imageUrls,
+        'petType': _selectedPetType,
       };
 
       // Add data to Firestore
@@ -211,7 +162,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     }
   }
 
-  /// Clear form data and reset state
+  // Clear form data and reset state
   void clearForm() {
     petNameController.clear();
     petBreedController.clear();
@@ -220,11 +171,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petWeightController.clear();
     petLocationController.clear();
     petOwnerPhoneController.clear();
-    petOwnerNameController.clear(); // Clear pet owner name
+    petOwnerNameController.clear();
     petImages.clear();
-    valuePetCategory = null;
-    valuePetGender = null;
-    valuePetVaccinated = null;
     notifyListeners();
   }
 }
