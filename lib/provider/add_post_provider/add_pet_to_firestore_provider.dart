@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/widgets/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -104,7 +105,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     return imageUrls;
   }
 
-  // Method to add pet data to Firestore
   Future<void> addPetToFireStore(BuildContext context) async {
     String petName = petNameController.text;
     String petBreed = petBreedController.text;
@@ -113,7 +113,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     int petWeight = int.tryParse(petWeightController.text) ?? 0;
     String petLocation = petLocationController.text;
     String petOwnerPhone = petOwnerPhoneController.text;
-    String petOwnerName = petOwnerNameController.text;
 
     // Validate the form fields
     if (petName.isEmpty ||
@@ -123,13 +122,11 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petWeight <= 0 ||
         petLocation.isEmpty ||
         petOwnerPhone.isEmpty ||
-        petImages.isEmpty ||
-        petOwnerName.isEmpty) {
+        petImages.isEmpty) {
       ToastHelper.showErrorToast(
         context: context,
         message: "Please fill in all fields and add at least one image.",
       );
-
       return;
     }
 
@@ -137,27 +134,28 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       // Upload images and get URLs
       List<String> imageUrls = await uploadImages(petName, context);
 
-      // Create pet data map
-      Map<String, dynamic> petData = {
-        'petName': petName,
-        'petBreed': petBreed,
-        'petDescription': petDescription,
-        'petAge': petAge,
-        'petWeight': petWeight,
-        'petLocation': petLocation,
-        'petOwnerPhoneNumber': petOwnerPhone,
-        'petOwnerName': petOwnerName,
-        'petImages': imageUrls,
-        'petType': _selectedPetType,
-      };
+      // Create a PetModels instance
+      PetModels pet = PetModels(
+        petName: petName,
+        petBreed: petBreed,
+        petDescription: petDescription,
+        petAge: petAge,
+        petWeight: petWeight,
+        petLocation: petLocation,
+        petOwnerPhoneNumber: petOwnerPhone,
+        petCategory: _selectedPetType,
+        isVaccinated: _vaccinationStatus == 'Vaccination Done',
+        petImages: imageUrls,
+      );
 
-      // Add data to Firestore
-      await _firestore.collection('pets').add(petData);
+      // Add pet data to Firestore
+      await _firestore.collection('pets').add(pet.toJson());
 
       ToastHelper.showSuccessToast(
         context: context,
         message: "Pet added to adoption successfully!",
       );
+
       // Clear form data after successful upload
       clearForm();
     } catch (e) {
@@ -177,7 +175,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petWeightController.clear();
     petLocationController.clear();
     petOwnerPhoneController.clear();
-    petOwnerNameController.clear();
     petImages.clear();
     notifyListeners();
   }
