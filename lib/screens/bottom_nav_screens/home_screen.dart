@@ -1,7 +1,9 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
+import 'package:adoptionapp/widgets/custom_internet_checker.dart';
 import 'package:adoptionapp/widgets/pet_card.dart';
 import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -15,8 +17,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// media query
     final size = MediaQuery.of(context).size;
+
+    /// providers
     final petProvider = Provider.of<PetCategoryProvider>(context);
+
+    final internetCheckerProvider =
+        Provider.of<InternetCheckerProvider>(context);
 
     // Define the pet categories and SVG icons
     final List<Map<String, String>> petCategories = [
@@ -130,109 +138,114 @@ class HomeScreen extends StatelessWidget {
                       height: size.height * 0.04,
                     ),
 
-                    /// Fetch and display pets from database based on selected category
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('pets')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        // Check if the snapshot has data
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: Lottie.asset(
-                              'assets/lotties/empty-animation.json',
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        }
+                    if (!internetCheckerProvider.isNetworkConnected)
+                      const CustomInternetChecker()
+                    else
 
-                        // Get all pets initially
-                        final allPets = snapshot.data!.docs;
-
-                        // Filter pets based on selected category
-                        final filteredPets =
-                            petProvider.selectedCategory == 'All'
-                                ? allPets
-                                : allPets.where((pet) {
-                                    final petCategory = pet['petCategory'] ??
-                                        'Others'; // Replace with your actual field name
-                                    return petCategory ==
-                                        petProvider.selectedCategory;
-                                  }).toList();
-
-                        // If no pets match the selected category, show the empty animation
-                        if (filteredPets.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  'assets/lotties/empty-animation.json',
-                                  fit: BoxFit.cover,
-                                ),
-                                AutoSizeText(
-                                  textAlign: TextAlign.start,
-                                  'No pets found in this category!',
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: size.width * 0.040,
-                                    color: const Color(0xFF4D4C4C),
-                                    fontFamily: "NunitoSans",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        // If pets are found, display them
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: filteredPets.length,
-                          itemBuilder: (context, index) {
-                            var pet = filteredPets[index];
-                            return OpenContainer(
-                              transitionType: ContainerTransitionType.fade,
-                              transitionDuration:
-                                  const Duration(milliseconds: 800),
-                              openBuilder:
-                                  (BuildContext context, VoidCallback _) {
-                                return const PetDescriptionScreen();
-                              },
-                              closedShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
+                      /// Fetch and display pets from database based on selected category
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('pets')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          // Check if the snapshot has data
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: Lottie.asset(
+                                'assets/lotties/empty-animation.json',
+                                fit: BoxFit.cover,
                               ),
-                              closedElevation: 0.0,
-                              openElevation: 0.0,
-                              closedColor: AppColors.secondaryColor,
-                              openColor: AppColors.secondaryColor,
-                              closedBuilder: (BuildContext context,
-                                  VoidCallback openContainer) {
-                                return InkWell(
-                                  onTap: openContainer,
-                                  child: PetCard(
-                                    imageUrl: pet['petImages'][0] ?? "",
-                                    petName: pet['petName'] ?? "Unknown",
-                                    petBreed: pet['petBreed'] ?? "Unknown",
-                                    petGender: pet['petGender'] ?? "Unknown",
-                                    petAge: pet['petAge'] ?? 0,
-                                    petOwnerName:
-                                        pet['petOwnerName'] ?? "Unknown",
+                            );
+                          }
+
+                          // Get all pets initially
+                          final allPets = snapshot.data!.docs;
+
+                          // Filter pets based on selected category
+                          final filteredPets =
+                              petProvider.selectedCategory == 'All'
+                                  ? allPets
+                                  : allPets.where((pet) {
+                                      final petCategory = pet['petCategory'] ??
+                                          'Others'; // Replace with your actual field name
+                                      return petCategory ==
+                                          petProvider.selectedCategory;
+                                    }).toList();
+
+                          // If no pets match the selected category, show the empty animation
+                          if (filteredPets.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Lottie.asset(
+                                    'assets/lotties/empty-animation.json',
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              },
+                                  AutoSizeText(
+                                    textAlign: TextAlign.start,
+                                    'No pets found in this category!',
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: size.width * 0.040,
+                                      color: const Color(0xFF4D4C4C),
+                                      fontFamily: "NunitoSans",
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return SizedBox(
-                              height: size.height * 0.02,
-                            );
-                          },
-                        );
-                      },
-                    ),
+                          }
+
+                          // If pets are found, display them
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: filteredPets.length,
+                            itemBuilder: (context, index) {
+                              var pet = filteredPets[index];
+                              return OpenContainer(
+                                transitionType: ContainerTransitionType.fade,
+                                transitionDuration:
+                                    const Duration(milliseconds: 800),
+                                openBuilder:
+                                    (BuildContext context, VoidCallback _) {
+                                  return const PetDescriptionScreen();
+                                },
+                                closedShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                closedElevation: 0.0,
+                                openElevation: 0.0,
+                                closedColor: AppColors.secondaryColor,
+                                openColor: AppColors.secondaryColor,
+                                closedBuilder: (BuildContext context,
+                                    VoidCallback openContainer) {
+                                  return InkWell(
+                                    onTap: openContainer,
+                                    child: PetCard(
+                                      imageUrl: pet['petImages'][0] ?? "",
+                                      petName: pet['petName'] ?? "Unknown",
+                                      petBreed: pet['petBreed'] ?? "Unknown",
+                                      petGender: pet['petGender'] ?? "Unknown",
+                                      petAge: pet['petAge'] ?? 0,
+                                      petOwnerName:
+                                          pet['petOwnerName'] ?? "Unknown",
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return SizedBox(
+                                height: size.height * 0.02,
+                              );
+                            },
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),
