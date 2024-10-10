@@ -1,9 +1,26 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class PetCard extends StatelessWidget {
-  const PetCard({super.key});
+  final String imageUrl;
+  final String petName;
+  final String petBreed;
+  final String petGender;
+  final int petAge;
+  final String petOwnerName;
+
+  const PetCard({
+    super.key,
+    required this.imageUrl,
+    required this.petName,
+    required this.petBreed,
+    required this.petGender,
+    required this.petAge,
+    required this.petOwnerName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,30 +38,42 @@ class PetCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                /// pet image[0]
+                // pet image
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Image.network(
-                    "https://plus.unsplash.com/premium_photo-1668606763482-8dd2042c934e?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
                     height: size.height,
                     width: size.width * 0.34,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => Center(
+                      child: LoadingAnimationWidget.discreteCircle(
+                        color: AppColors.primaryColor,
+                        size: size.width * 0.03,
+                      ),
+                    ),
+                    // Placeholder while loading
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.error,
+                      size: size.width * 0.03,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
                 SizedBox(
                   width: size.width * 0.06,
                 ),
 
-                /// pet name
+                /// Pet name
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ///pet name
+                    /// Pet name
                     AutoSizeText(
                       textAlign: TextAlign.start,
-                      "Sparkly",
+                      petName,
                       maxLines: 2,
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
@@ -58,10 +87,10 @@ class PetCard extends StatelessWidget {
                       height: size.height * 0.002,
                     ),
 
-                    /// pet breed
+                    /// Pet breed
                     AutoSizeText(
                       textAlign: TextAlign.start,
-                      "Golden Retriver",
+                      petBreed,
                       maxLines: 2,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -78,10 +107,10 @@ class PetCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        /// pet gender
+                        /// Pet gender
                         AutoSizeText(
                           textAlign: TextAlign.start,
-                          "Female,",
+                          "$petGender,",
                           maxLines: 2,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
@@ -91,10 +120,10 @@ class PetCard extends StatelessWidget {
                           ),
                         ),
 
-                        /// pet age
+                        /// Pet age
                         AutoSizeText(
                           textAlign: TextAlign.start,
-                          "8 months",
+                          petAge.toString(),
                           maxLines: 2,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
@@ -121,10 +150,10 @@ class PetCard extends StatelessWidget {
                           width: size.width * 0.02,
                         ),
 
-                        /// pet owner name
+                        /// Pet owner name
                         AutoSizeText(
                           textAlign: TextAlign.start,
-                          "Sanjiv",
+                          petOwnerName,
                           maxLines: 2,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,

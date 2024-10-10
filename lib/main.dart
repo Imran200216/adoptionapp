@@ -9,6 +9,7 @@ import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.
 import 'package:adoptionapp/provider/app_required_providers/scroll_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/password_visibility_provider.dart';
+import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
@@ -109,6 +110,11 @@ class MyApp extends StatelessWidget {
         /// scroll provider
         ChangeNotifierProvider(
           create: (_) => ScrollProvider(),
+        ),
+
+        /// pet category provider
+        ChangeNotifierProvider(
+          create: (_) => PetCategoryProvider(),
         ),
       ],
       builder: (context, child) {

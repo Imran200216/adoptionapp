@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PetCategoryChips extends StatelessWidget {
+  final Function(String) onTap;
   final List<Map<String, String>> petCategories;
 
   const PetCategoryChips({
     super.key,
     required this.petCategories,
+    required this.onTap,
   });
 
   @override
@@ -23,32 +25,36 @@ class PetCategoryChips extends StatelessWidget {
               horizontal: 8.0,
               vertical: 18,
             ),
-            child: Container(
-              width: size.width * 0.20,
-              height: size.height * 0.12,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLightShapeColor,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    category['icon']!,
-                    width: 50.0, // Size of the SVG icon
-                    height: 50.0,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    category['name']!,
-                    style: TextStyle(
-                      color: AppColors.blackColor,
-                      fontFamily: "NunitoSans",
-                      fontWeight: FontWeight.w700,
-                      fontSize: size.width * 0.04, // Text size
+            child: InkWell(
+              onTap: () => onTap(category['name']!),
+              // Pass category name on tap
+              child: Container(
+                width: size.width * 0.20,
+                height: size.height * 0.12,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLightShapeColor,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      category['icon']!,
+                      width: 50.0,
+                      height: 50.0,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      category['name']!,
+                      style: TextStyle(
+                        color: AppColors.blackColor,
+                        fontFamily: "NunitoSans",
+                        fontWeight: FontWeight.w700,
+                        fontSize: size.width * 0.04,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

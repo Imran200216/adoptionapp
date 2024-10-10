@@ -1,13 +1,19 @@
 import 'dart:io';
+import 'package:adoptionapp/helper/debounce_helper.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
+import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/widgets/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
 
 class AddPetToFireStoreProvider extends ChangeNotifier {
-  // TextEditingControllers for form fields
+  /// debounce helper
+  final DebounceHelper _debounceHelper = DebounceHelper();
+
+  /// TextEditingControllers for form fields
   TextEditingController petNameController = TextEditingController();
   TextEditingController petBreedController = TextEditingController();
   TextEditingController petDescriptionController = TextEditingController();
@@ -24,7 +30,17 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   int _selectedPetAge = 1;
   List<File> petImages = [];
 
-  // Page controller for the image slider
+  /// loading state
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  /// Page controller for the image slider
   PageController pageController = PageController();
 
   // Firebase Storage and Firestore instances
@@ -40,7 +56,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
 
   int get selectedPetAge => _selectedPetAge;
 
-  // Methods for setting values
+  /// Methods for setting values
   void setPetAge(int value) {
     _selectedPetAge = value;
     notifyListeners();
@@ -61,7 +77,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to pick an image from gallery or camera
+  /// Method to pick an image from gallery or camera
   Future<void> pickImage(ImageSource source, BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile = await _picker.pickImage(source: source);
@@ -81,7 +97,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     }
   }
 
-  // Method to upload images to Firebase Storage and return the list of URLs
+  /// Method to upload images to Firebase Storage and return the list of URLs
   Future<List<String>> uploadImages(
       String petName, BuildContext context) async {
     List<String> imageUrls = [];
@@ -106,7 +122,20 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   }
 
   Future<void> addPetToFireStore(BuildContext context) async {
+    /// Check if the debounce timer is active
+    if (_debounceHelper.isDebounced()) {
+      return; // Prevent further execution if already debounced
+    }
+
+    /// Activate the debounce timer for a certain duration
+    _debounceHelper.activateDebounce(
+      duration: const Duration(
+        seconds: 2,
+      ),
+    );
+
     String petName = petNameController.text;
+    String petOwnerName = petOwnerNameController.text;
     String petBreed = petBreedController.text;
     String petDescription = petDescriptionController.text;
     int petAge = int.tryParse(petAgeController.text) ?? 0;
@@ -114,28 +143,28 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     String petLocation = petLocationController.text;
     String petOwnerPhone = petOwnerPhoneController.text;
 
-    // Validate the form fields
+    /// Validate the form fields
     if (petName.isEmpty ||
         petBreed.isEmpty ||
         petDescription.isEmpty ||
-        petAge <= 0 ||
-        petWeight <= 0 ||
-        petLocation.isEmpty ||
-        petOwnerPhone.isEmpty ||
         petImages.isEmpty) {
       ToastHelper.showErrorToast(
         context: context,
-        message: "Please fill in all fields and add at least one image.",
+        message: "Please fill in all fields",
       );
       return;
     }
 
+    // Set loading to true
+    setLoading(true);
+
     try {
-      // Upload images and get URLs
+      /// Upload images and get URLs
       List<String> imageUrls = await uploadImages(petName, context);
 
-      // Create a PetModels instance
+      /// Create a PetModels instance
       PetModels pet = PetModels(
+        petOwnerName: petOwnerName,
         petName: petName,
         petBreed: petBreed,
         petDescription: petDescription,
@@ -143,6 +172,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petWeight: petWeight,
         petLocation: petLocation,
         petOwnerPhoneNumber: petOwnerPhone,
+        petGender: _selectedGender,
         petCategory: _selectedPetType,
         isVaccinated: _vaccinationStatus == 'Vaccination Done',
         petImages: imageUrls,
@@ -156,6 +186,11 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         message: "Pet added to adoption successfully!",
       );
 
+      // Obtain the BottomNavProvider to navigate to the Home tab
+      final bottomNavProvider =
+          Provider.of<BottomNavProvider>(context, listen: false);
+      bottomNavProvider.navigateToIndex(context, 0);
+
       // Clear form data after successful upload
       clearForm();
     } catch (e) {
@@ -163,11 +198,15 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         context: context,
         message: "Failed to add pet: $e.",
       );
+    } finally {
+      // Set loading to false
+      setLoading(false);
     }
   }
 
   // Clear form data and reset state
   void clearForm() {
+    // Clear the text fields
     petNameController.clear();
     petBreedController.clear();
     petDescriptionController.clear();
@@ -175,7 +214,31 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petWeightController.clear();
     petLocationController.clear();
     petOwnerPhoneController.clear();
+
+    // Clear the images list
     petImages.clear();
+
+    // Reset dropdowns and radio selections
+    _selectedPetType = 'Dog';
+    _selectedGender = 'male';
+    _vaccinationStatus = 'Vaccination Done';
+    _selectedPetAge = 1;
+
+    // Notify listeners to rebuild the UI
     notifyListeners();
+  }
+
+  /// for validating partially
+  bool isFormPartiallyFilled() {
+    return petNameController.text.isNotEmpty ||
+        petBreedController.text.isNotEmpty ||
+        petWeightController.text.isNotEmpty ||
+        petOwnerNameController.text.isNotEmpty ||
+        petOwnerPhoneController.text.isNotEmpty ||
+        petDescriptionController.text.isNotEmpty ||
+        petImages.isNotEmpty ||
+        selectedPetType.isNotEmpty == true ||
+        selectedGender.isNotEmpty == true ||
+        vaccinationStatus.isNotEmpty == true;
   }
 }

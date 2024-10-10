@@ -1,7 +1,9 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/scroll_provider.dart';
+import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/widgets/add_text_field.dart';
+import 'package:adoptionapp/widgets/custom_alert_dialog.dart';
 import 'package:adoptionapp/widgets/custom_description_text_field.dart';
 import 'package:adoptionapp/widgets/custom_drop_down_textfield.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_image_viewer/insta_image_viewer.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -20,7 +23,12 @@ class AddPetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// media query
     final size = MediaQuery.of(context).size;
+
+    /// provider
+    var addPetToFireStoreProvider =
+        Provider.of<AddPetToFireStoreProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -29,7 +37,39 @@ class AddPetContent extends StatelessWidget {
           backgroundColor: AppColors.primaryColor,
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              bool isFormPartiallyFilled =
+                  addPetToFireStoreProvider.isFormPartiallyFilled();
+
+              if (isFormPartiallyFilled) {
+                /// Show alert dialog if the form is partially filled
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CustomAlertDialog(
+                      title: "Exit without saving?",
+                      content:
+                          "You have unsaved changes. Do you want to exit without saving?",
+                      confirmText: "Exit",
+                      cancelText: "Cancel",
+                      onConfirm: () {
+                        /// clear all the text fields
+                        addPetToFireStoreProvider.clearForm();
+
+                        /// Close the dialog
+                        Navigator.of(context).pop();
+                        Navigator.pop(context);
+                      },
+                      onCancel: () {
+                        /// Close the dialog
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                );
+              } else {
+                /// Simply navigate back if the form is not partially filled
+                Navigator.pop(context);
+              }
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -47,11 +87,13 @@ class AddPetContent extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           // Add this line
-          child: Consumer2<AddPetToFireStoreProvider, ScrollProvider>(
+          child: Consumer3<AddPetToFireStoreProvider, ScrollProvider,
+              BottomNavProvider>(
             builder: (
               context,
               addPetToFirebase,
               scrollProvider,
+              bottomNavProvider,
               child,
             ) {
               return Column(
@@ -226,10 +268,9 @@ class AddPetContent extends StatelessWidget {
                               padding: const EdgeInsets.all(20.0),
                               child: CustomRadio(
                                 options: const [
-                                  'Dog',
-                                  'Cat',
-                                  'Bird',
-                                  'Fish',
+                                  'Dogs',
+                                  'Cats',
+                                  'Birds',
                                   'Others'
                                 ],
                                 selectedOption:
@@ -360,31 +401,55 @@ class AddPetContent extends StatelessWidget {
                             height: size.height * 0.04,
                           ),
 
-                          /// pet description text field
+                          /// pet location text field
                           DescriptionTextField(
-                            prefixIcon: Icons.description,
-                            hintText: "Describe your pet...",
-                            controller:
-                                addPetToFirebase.petDescriptionController,
-                            maxLines: 8, // Custom number of lines
+                            prefixIcon: Icons.location_city,
+                            hintText: "Pet Location...",
+                            controller: addPetToFirebase.petLocationController,
+                            maxLines: 8,
                           ),
 
                           SizedBox(
                             height: size.height * 0.05,
                           ),
 
-                          CustomIconBtn(
-                            btnHeight: 50,
-                            btnWidth: size.width,
-                            btnText: "Add adoption",
-                            btnBorderRadius: 6,
-                            btnOnTap: () {
-                              addPetToFirebase.addPetToFireStore(context);
-                            },
-                            btnIcon: Icons.pets,
-                            btnColor: AppColors.primaryColor,
-                            btnTextColor: AppColors.secondaryColor,
-                            btnIconColor: AppColors.secondaryColor,
+                          /// pet description text field
+                          DescriptionTextField(
+                            prefixIcon: Icons.description,
+                            hintText: "Describe your pet...",
+                            controller:
+                                addPetToFirebase.petDescriptionController,
+                            maxLines: 8,
+                          ),
+
+                          SizedBox(
+                            height: size.height * 0.05,
+                          ),
+
+                          addPetToFirebase.isLoading
+                              ? Center(
+                                  child: LoadingAnimationWidget.discreteCircle(
+                                    color: AppColors.primaryColor,
+                                    size: size.width * 0.06,
+                                  ),
+                                )
+                              : CustomIconBtn(
+                                  btnHeight: 50,
+                                  btnWidth: size.width,
+                                  btnText: "Add adoption",
+                                  btnBorderRadius: 6,
+                                  btnOnTap: () {
+                                    /// add post to the database
+                                    addPetToFirebase.addPetToFireStore(context);
+                                  },
+                                  btnIcon: Icons.pets,
+                                  btnColor: AppColors.primaryColor,
+                                  btnTextColor: AppColors.secondaryColor,
+                                  btnIconColor: AppColors.secondaryColor,
+                                ),
+
+                          SizedBox(
+                            height: size.height * 0.05,
                           ),
                         ],
                       ),

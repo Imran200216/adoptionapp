@@ -9,6 +9,8 @@ class PetModels {
   final String petCategory;
   final bool isVaccinated;
   final List<String> petImages;
+  final String petGender;
+  final String petOwnerName;
 
   PetModels({
     required this.petName,
@@ -21,6 +23,8 @@ class PetModels {
     required this.petCategory,
     required this.isVaccinated,
     required this.petImages,
+    required this.petGender,
+    required this.petOwnerName,
   });
 
   /// Convert the PetModels instance to a JSON-friendly Map
@@ -36,22 +40,26 @@ class PetModels {
       'petCategory': petCategory,
       'isVaccinated': isVaccinated,
       'petImages': petImages,
+      'petGender': petGender,
+      'petOwnerName': petOwnerName,
     };
   }
 
   /// Factory constructor to create a PetModels instance from a Firestore document
   factory PetModels.fromFirestore(Map<String, dynamic> data) {
     return PetModels(
-      petName: data['petName'] ?? '', // Provide default empty string if null
+      petName: data['petName'] ?? '',
       petBreed: data['petBreed'] ?? '',
       petDescription: data['petDescription'] ?? '',
-      petAge: (data['petAge'] ?? 0).toInt(), // Ensure it's an int
+      petAge: (data['petAge'] ?? 0).toInt(),
       petWeight: (data['petWeight'] ?? 0).toInt(),
       petLocation: data['petLocation'] ?? '',
       petOwnerPhoneNumber: data['petOwnerPhoneNumber'] ?? '',
       petCategory: data['petCategory'] ?? '',
-      isVaccinated: (data['isVaccinated'] ?? false) as bool, // Ensure it's a bool
-      petImages: List<String>.from(data['petImages'] ?? []), // Ensure it's a List<String>
+      isVaccinated: (data['isVaccinated'] ?? false) as bool,
+      petImages: List<String>.from(data['petImages'] ?? []),
+      petGender: data['petGender'] ?? '',
+      petOwnerName: data['petOwnerName'] ?? '',
     );
   }
 }
