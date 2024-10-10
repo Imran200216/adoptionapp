@@ -16,7 +16,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     final petProvider = Provider.of<PetCategoryProvider>(context);
 
     // Define the pet categories and SVG icons
@@ -111,10 +110,9 @@ class HomeScreen extends StatelessWidget {
                     PetCategoryChips(
                       onTap: (String category) {
                         petProvider.setCategory(category);
-                        // You can decide whether to fetch pets again
-                        // petProvider.fetchPets(); // Fetch pets based on selected category
                       },
                       petCategories: petCategories,
+                      selectedCategory: petProvider.selectedCategory,
                     ),
                     AutoSizeText(
                       textAlign: TextAlign.start,
@@ -138,59 +136,12 @@ class HomeScreen extends StatelessWidget {
                           .collection('pets')
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                                ConnectionState.waiting &&
-                            !snapshot.hasData) {
-                          // Initial loading state
+                        // Check if the snapshot has data
+                        if (!snapshot.hasData) {
                           return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  "assets/lotties/waiting.json",
-                                  fit: BoxFit.cover,
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.03,
-                                ),
-                                AutoSizeText(
-                                  textAlign: TextAlign.start,
-                                  'Loading!',
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: size.width * 0.040,
-                                    color: const Color(0xFF4D4C4C),
-                                    fontFamily: "NunitoSans",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          // If no pets are found, show Lottie animation
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  'assets/lotties/empty-animation.json',
-                                  fit: BoxFit.cover,
-                                ),
-                                AutoSizeText(
-                                  textAlign: TextAlign.start,
-                                  'No pets found!',
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: size.width * 0.040,
-                                    color: const Color(0xFF4D4C4C),
-                                    fontFamily: "NunitoSans",
-                                  ),
-                                ),
-                              ],
+                            child: Lottie.asset(
+                              'assets/lotties/empty-animation.json',
+                              fit: BoxFit.cover,
                             ),
                           );
                         }
@@ -198,7 +149,7 @@ class HomeScreen extends StatelessWidget {
                         // Get all pets initially
                         final allPets = snapshot.data!.docs;
 
-                        // If a category is selected, filter the pets
+                        // Filter pets based on selected category
                         final filteredPets =
                             petProvider.selectedCategory == 'All'
                                 ? allPets

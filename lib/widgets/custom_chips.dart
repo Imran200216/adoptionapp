@@ -5,11 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 class PetCategoryChips extends StatelessWidget {
   final Function(String) onTap;
   final List<Map<String, String>> petCategories;
+  final String selectedCategory;
 
   const PetCategoryChips({
     super.key,
     required this.petCategories,
     required this.onTap,
+    required this.selectedCategory,
   });
 
   @override
@@ -20,6 +22,8 @@ class PetCategoryChips extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: petCategories.map((category) {
+          bool isSelected = category['name'] == selectedCategory;
+
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 8.0,
@@ -27,33 +31,44 @@ class PetCategoryChips extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () => onTap(category['name']!),
-              // Pass category name on tap
               child: Container(
-                width: size.width * 0.20,
-                height: size.height * 0.12,
+                // Outer Container for the border
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLightShapeColor,
+                  color: Colors.transparent, // Transparent to see the space
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color:
+                        isSelected ? AppColors.blackColor : Colors.transparent,
+                    width: 2,
+                  ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      category['icon']!,
-                      width: 50.0,
-                      height: 50.0,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      category['name']!,
-                      style: TextStyle(
-                        color: AppColors.blackColor,
-                        fontFamily: "NunitoSans",
-                        fontWeight: FontWeight.w700,
-                        fontSize: size.width * 0.04,
+                child: Container(
+                  width: size.width * 0.20,
+                  height: size.height * 0.12,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLightShapeColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        category['icon']!,
+                        width: 50.0,
+                        height: 50.0,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        category['name']!,
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontFamily: "NunitoSans",
+                          fontWeight: FontWeight.w700,
+                          fontSize: size.width * 0.04,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
