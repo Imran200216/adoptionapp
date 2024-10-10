@@ -64,6 +64,8 @@ dependencies:
   in_app_review: ^2.0.9
   insta_image_viewer: ^1.0.4
   connectivity_plus: ^6.0.5
+  shimmer: ^3.0.0
+  uuid: ^4.5.1
 
 
 

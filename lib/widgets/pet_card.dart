@@ -1,10 +1,13 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 class PetCard extends StatelessWidget {
+  final String petId;
   final String imageUrl;
   final String petName;
   final String petBreed;
@@ -20,11 +23,16 @@ class PetCard extends StatelessWidget {
     required this.petGender,
     required this.petAge,
     required this.petOwnerName,
+    required this.petId,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
+    // pet category provider
+    final favoritePetsProvider = Provider.of<AddPetFavoriteProvider>(context);
+
     return Container(
       height: size.height * 0.18,
       width: size.width,
@@ -51,10 +59,9 @@ class PetCard extends StatelessWidget {
                     placeholder: (context, url) => Center(
                       child: LoadingAnimationWidget.discreteCircle(
                         color: AppColors.primaryColor,
-                        size: size.width * 0.03,
+                        size: size.width * 0.05,
                       ),
                     ),
-                    // Placeholder while loading
                     errorWidget: (context, url, error) => Icon(
                       Icons.error,
                       size: size.width * 0.03,
@@ -62,17 +69,13 @@ class PetCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: size.width * 0.06,
-                ),
+                SizedBox(width: size.width * 0.06),
 
                 /// Pet name
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Pet name
                     AutoSizeText(
-                      textAlign: TextAlign.start,
                       petName,
                       maxLines: 2,
                       style: TextStyle(
@@ -83,13 +86,10 @@ class PetCard extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(
-                      height: size.height * 0.002,
-                    ),
+                    SizedBox(height: size.height * 0.002),
 
                     /// Pet breed
                     AutoSizeText(
-                      textAlign: TextAlign.start,
                       petBreed,
                       maxLines: 2,
                       style: TextStyle(
@@ -100,16 +100,13 @@ class PetCard extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(
-                      height: size.height * 0.002,
-                    ),
+                    SizedBox(height: size.height * 0.002),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         /// Pet gender
                         AutoSizeText(
-                          textAlign: TextAlign.start,
                           "$petGender,",
                           maxLines: 2,
                           style: TextStyle(
@@ -122,7 +119,6 @@ class PetCard extends StatelessWidget {
 
                         /// Pet age
                         AutoSizeText(
-                          textAlign: TextAlign.start,
                           petAge.toString(),
                           maxLines: 2,
                           style: TextStyle(
@@ -135,9 +131,7 @@ class PetCard extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
+                    SizedBox(height: size.height * 0.03),
 
                     Row(
                       children: [
@@ -146,13 +140,10 @@ class PetCard extends StatelessWidget {
                           color: AppColors.primaryColor,
                           size: size.width * 0.06,
                         ),
-                        SizedBox(
-                          width: size.width * 0.02,
-                        ),
+                        SizedBox(width: size.width * 0.02),
 
                         /// Pet owner name
                         AutoSizeText(
-                          textAlign: TextAlign.start,
                           petOwnerName,
                           maxLines: 2,
                           style: TextStyle(
@@ -172,10 +163,31 @@ class PetCard extends StatelessWidget {
               right: 0,
               top: -10,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Check if the pet is already a favorite
+                  if (favoritePetsProvider.isFavorite(petId)) {
+                    // If it is, remove it from favorites
+                    favoritePetsProvider.removePetFromFavorites(petId, context);
+                  } else {
+                    // If it's not, add it to favorites
+                    favoritePetsProvider.addPetToFavorites({
+                      'petId': petId,
+                      'imageUrl': imageUrl,
+                      'name': petName,
+                      'breed': petBreed,
+                      'gender': petGender,
+                      'age': petAge,
+                      'ownerName': petOwnerName,
+                    }, context);
+                  }
+                },
                 icon: Icon(
-                  Icons.favorite,
-                  color: const Color(0xFFFE5E4E),
+                  favoritePetsProvider.isFavorite(petId)
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: favoritePetsProvider.isFavorite(petId)
+                      ? Colors.red
+                      : Colors.grey,
                   size: size.width * 0.072,
                 ),
               ),

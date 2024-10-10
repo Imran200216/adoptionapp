@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,9 +21,10 @@ class HomeScreen extends StatelessWidget {
     /// media query
     final size = MediaQuery.of(context).size;
 
-    /// providers
+    /// pet category providers
     final petProvider = Provider.of<PetCategoryProvider>(context);
 
+    /// internet checker provider
     final internetCheckerProvider =
         Provider.of<InternetCheckerProvider>(context);
 
@@ -150,11 +152,32 @@ class HomeScreen extends StatelessWidget {
                         builder: (context, snapshot) {
                           // Check if the snapshot has data
                           if (!snapshot.hasData) {
-                            return Center(
-                              child: Lottie.asset(
-                                'assets/lotties/empty-animation.json',
-                                fit: BoxFit.cover,
-                              ),
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: 10,
+                              itemBuilder: (context, index) {
+                                return Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    height: size.height * 0.15,
+                                    // Example height for the shimmer
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.white,
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                  ),
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return SizedBox(
+                                  height: size.height * 0.02,
+                                );
+                              },
                             );
                           }
 
@@ -225,6 +248,7 @@ class HomeScreen extends StatelessWidget {
                                   return InkWell(
                                     onTap: openContainer,
                                     child: PetCard(
+                                      petId: pet['petId'] ?? "",
                                       imageUrl: pet['petImages'][0] ?? "",
                                       petName: pet['petName'] ?? "Unknown",
                                       petBreed: pet['petBreed'] ?? "Unknown",

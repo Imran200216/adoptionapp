@@ -10,6 +10,7 @@ import 'package:adoptionapp/provider/app_required_providers/scroll_provider.dart
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/password_visibility_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
+import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
@@ -115,6 +116,11 @@ class MyApp extends StatelessWidget {
         /// pet category provider
         ChangeNotifierProvider(
           create: (_) => PetCategoryProvider(),
+        ),
+
+        /// favorite provider
+        ChangeNotifierProvider(
+          create: (_) => AddPetFavoriteProvider(),
         ),
       ],
       builder: (context, child) {

@@ -6,13 +6,12 @@ import 'package:adoptionapp/widgets/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPetToFireStoreProvider extends ChangeNotifier {
-  /// debounce helper
+  /// Debounce helper
   final DebounceHelper _debounceHelper = DebounceHelper();
 
   /// TextEditingControllers for form fields
@@ -32,7 +31,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   int _selectedPetAge = 1;
   List<File> petImages = [];
 
-  /// loading state
+  /// Loading state
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -124,18 +123,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   }
 
   Future<void> addPetToFireStore(BuildContext context) async {
-    /// Check if the debounce timer is active
-    if (_debounceHelper.isDebounced()) {
-      return; // Prevent further execution if already debounced
-    }
-
-    /// Activate the debounce timer for a certain duration
-    _debounceHelper.activateDebounce(
-      duration: const Duration(
-        seconds: 2,
-      ),
-    );
-
     String petName = petNameController.text;
     String petOwnerName = petOwnerNameController.text;
     String petBreed = petBreedController.text;
@@ -164,8 +151,12 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       /// Upload images and get URLs
       List<String> imageUrls = await uploadImages(petName, context);
 
+      /// Generate a unique pet ID
+      String petId = const Uuid().v4();
+
       /// Create a PetModels instance
       PetModels pet = PetModels(
+        petId: petId,
         petOwnerName: petOwnerName,
         petName: petName,
         petBreed: petBreed,
@@ -181,7 +172,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       );
 
       // Add pet data to Firestore
-      await _firestore.collection('pets').add(pet.toJson());
+      await _firestore.collection('pets').doc(petId).set(pet.toJson());
 
       ToastHelper.showSuccessToast(
         context: context,
@@ -230,7 +221,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// for validating partially
+  /// For validating partially
   bool isFormPartiallyFilled() {
     return petNameController.text.isNotEmpty ||
         petBreedController.text.isNotEmpty ||
@@ -239,8 +230,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petOwnerPhoneController.text.isNotEmpty ||
         petDescriptionController.text.isNotEmpty ||
         petImages.isNotEmpty ||
-        selectedPetType.isNotEmpty == true ||
-        selectedGender.isNotEmpty == true ||
-        vaccinationStatus.isNotEmpty == true;
+        selectedPetType.isNotEmpty ||
+        selectedGender.isNotEmpty ||
+        vaccinationStatus.isNotEmpty;
   }
 }
