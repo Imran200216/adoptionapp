@@ -1,5 +1,5 @@
 import 'package:adoptionapp/constants/colors.dart';
-import 'package:adoptionapp/screens/add_pet_content.dart';
+import 'package:adoptionapp/screens/add_pet_content_screen/add_pet_content.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
