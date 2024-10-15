@@ -1,26 +1,38 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
+import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
 import 'package:adoptionapp/widgets/circular_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/pet_description_content.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class PetDescriptionScreen extends StatelessWidget {
-  const PetDescriptionScreen({super.key});
+  final PetModels pet;
+
+  const PetDescriptionScreen({
+    super.key,
+    required this.pet,
+  });
 
   @override
   Widget build(BuildContext context) {
+    /// media query
     final size = MediaQuery.of(context).size;
 
     return SafeArea(
       child: Scaffold(
-        body: Consumer<PhoneCallProvider>(
+        body: Consumer2<PhoneCallProvider, PetDescriptionProvider>(
           builder: (
             context,
             phoneCallProvider,
+            petDescriptionProvider,
             child,
           ) {
             return Container(
@@ -67,26 +79,53 @@ class PetDescriptionScreen extends StatelessWidget {
 
                   /// pet image
                   Container(
-                    margin: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                    ),
-                    height: size.height * 0.24,
-                    width: size.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          "https://images.unsplash.com/photo-1422565096762-bdb997a56a84?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                        ),
-                        fit: BoxFit.cover,
-                      ),
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    height: MediaQuery.of(context).size.height * 0.30,
+                    width: MediaQuery.of(context).size.width,
+                    child: PageView.builder(
+                      controller: petDescriptionProvider.pageController,
+                      itemCount: pet.petImages.length,
+                      itemBuilder: (context, index) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: pet.petImages[index],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Center(
+                              child: LoadingAnimationWidget.discreteCircle(
+                                color: AppColors.primaryColor,
+                                size: size.width * 0.06,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Center(
+                              child: Icon(
+                                Icons.error,
+                                size: size.width * 0.06,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
+                  SizedBox(height: size.height * 0.03),
+                  // Space between images and indicator
 
-                  SizedBox(
-                    height: size.height * 0.04,
-                  ),
+                  pet.petImages.length == 2
+                      ? SmoothPageIndicator(
+                          controller: petDescriptionProvider.pageController,
+                          count: pet.petImages.length,
+                          effect: const WormEffect(
+                            activeDotColor: Colors.blue,
+                            dotHeight: 8,
+                            dotWidth: 8,
+                            spacing: 8,
+                          ),
+                        )
+                      : const SizedBox(),
+
+                  SizedBox(height: size.height * 0.04),
 
                   /// Expanded section to make it scrollable
                   Expanded(
@@ -113,7 +152,7 @@ class PetDescriptionScreen extends StatelessWidget {
                               /// pet name
                               AutoSizeText(
                                 textAlign: TextAlign.start,
-                                'Dubby',
+                                pet.petName,
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
@@ -130,7 +169,7 @@ class PetDescriptionScreen extends StatelessWidget {
                               /// pet breed name
                               AutoSizeText(
                                 textAlign: TextAlign.start,
-                                'German Shepherd',
+                                pet.petBreed,
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
@@ -144,28 +183,30 @@ class PetDescriptionScreen extends StatelessWidget {
                                 height: size.height * 0.02,
                               ),
 
-                              const Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   /// pet gender
                                   PetDescriptionContent(
-                                    dividerColor: Color(0xFFFFE7A9),
-                                    petDescriptionContentTitle: "Male",
+                                    dividerColor: const Color(0xFFFFE7A9),
+                                    petDescriptionContentTitle: pet.petGender,
                                     petDescriptionContentSubTitle: "Gender",
                                   ),
 
                                   /// pet age
                                   PetDescriptionContent(
-                                    dividerColor: Color(0xFFFFDFDF),
-                                    petDescriptionContentTitle: "2 Months",
+                                    dividerColor: const Color(0xFFFFDFDF),
+                                    petDescriptionContentTitle:
+                                        "${pet.petAge} Months",
                                     petDescriptionContentSubTitle: "Age",
                                   ),
 
                                   /// pet weight
                                   PetDescriptionContent(
-                                    dividerColor: Color(0xFFEEDFFF),
-                                    petDescriptionContentTitle: "8 kg",
+                                    dividerColor: const Color(0xFFEEDFFF),
+                                    petDescriptionContentTitle:
+                                        "${pet.petWeight} kg",
                                     petDescriptionContentSubTitle: "Weight",
                                   ),
                                 ],
@@ -176,41 +217,79 @@ class PetDescriptionScreen extends StatelessWidget {
                               ),
 
                               /// vaccinated or not
-                              Container(
-                                height: size.height * 0.05,
-                                width: size.width * 0.44,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: const Color(0xFF7ED596),
-                                ),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AutoSizeText(
-                                        textAlign: TextAlign.start,
-                                        'Vaccinated',
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: size.width * 0.04,
-                                          color: const Color(0xFF445549),
-                                          fontFamily: "NunitoSans",
+                              pet.isVaccinated == true
+                                  ? Container(
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.44,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color(0xFF7ED596),
+                                      ),
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            AutoSizeText(
+                                              textAlign: TextAlign.start,
+                                              'Vaccinated',
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: size.width * 0.04,
+                                                color: const Color(0xFF445549),
+                                                fontFamily: "NunitoSans",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: size.width * 0.03,
+                                            ),
+                                            SvgPicture.asset(
+                                              "assets/images/svg/correct-icon.svg",
+                                              height: size.height * 0.03,
+                                              fit: BoxFit.cover,
+                                              color: const Color(0xFF445549),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: size.width * 0.03,
+                                    )
+                                  : Container(
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.48,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: AppColors.failureToastColor,
                                       ),
-                                      SvgPicture.asset(
-                                        "assets/images/svg/correct-icon.svg",
-                                        height: size.height * 0.03,
-                                        fit: BoxFit.cover,
-                                        color: const Color(0xFF445549),
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            AutoSizeText(
+                                              textAlign: TextAlign.start,
+                                              'Not Vaccinated',
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: size.width * 0.04,
+                                                color: AppColors.secondaryColor,
+                                                fontFamily: "NunitoSans",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: size.width * 0.03,
+                                            ),
+                                            SvgPicture.asset(
+                                              "assets/images/svg/vaccine-icon.svg",
+                                              height: size.height * 0.03,
+                                              fit: BoxFit.cover,
+                                              color: AppColors.secondaryColor,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    ),
 
                               SizedBox(
                                 height: size.height * 0.02,
@@ -240,10 +319,12 @@ class PetDescriptionScreen extends StatelessWidget {
                                   SizedBox(
                                     width: size.width * 0.04,
                                   ),
+
+                                  /// location
                                   Expanded(
                                     // Allowing the text to expand within available space
                                     child: AutoSizeText(
-                                      "No 35, 1st cross thendral nagar, new saram, puducherry - 605013",
+                                      pet.petLocation,
                                       textAlign: TextAlign.start,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
@@ -263,7 +344,7 @@ class PetDescriptionScreen extends StatelessWidget {
                               /// pet description
                               AutoSizeText(
                                 textAlign: TextAlign.start,
-                                'About Buddy',
+                                'About ${pet.petName}',
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
@@ -279,7 +360,7 @@ class PetDescriptionScreen extends StatelessWidget {
 
                               AutoSizeText(
                                 textAlign: TextAlign.start,
-                                '''Buddy is a playful, loyal, and affectionate Golden Retriever who's ready to find his forever home! At just 2 years old, Buddy has the energy of a puppy but with the charm and manners of a mature dog. He's the perfect companion for someone who enjoys outdoor activities, long walks, or simply snuggling on the couch.''',
+                                pet.petDescription,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: size.width * 0.042,
@@ -300,7 +381,7 @@ class PetDescriptionScreen extends StatelessWidget {
                                       CircularIconBtn(
                                         onTap: () {
                                           phoneCallProvider.phoneCallToggle(
-                                            "+919677588696",
+                                            pet.petOwnerPhoneNumber,
                                             context,
                                           );
                                         },

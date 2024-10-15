@@ -14,6 +14,8 @@ class PetCard extends StatelessWidget {
   final String petGender;
   final int petAge;
   final String petOwnerName;
+  final Icon favoriteIcon;
+  final VoidCallback onFavoriteTap;
 
   const PetCard({
     super.key,
@@ -24,6 +26,8 @@ class PetCard extends StatelessWidget {
     required this.petAge,
     required this.petOwnerName,
     required this.petId,
+    required this.onFavoriteTap,
+    required this.favoriteIcon,
   });
 
   @override
@@ -163,33 +167,8 @@ class PetCard extends StatelessWidget {
               right: 0,
               top: -10,
               child: IconButton(
-                onPressed: () {
-                  // Check if the pet is already a favorite
-                  if (favoritePetsProvider.isFavorite(petId)) {
-                    // If it is, remove it from favorites
-                    favoritePetsProvider.removePetFromFavorites(petId, context);
-                  } else {
-                    // If it's not, add it to favorites
-                    favoritePetsProvider.addPetToFavorites({
-                      'petId': petId,
-                      'imageUrl': imageUrl,
-                      'name': petName,
-                      'breed': petBreed,
-                      'gender': petGender,
-                      'age': petAge,
-                      'ownerName': petOwnerName,
-                    }, context);
-                  }
-                },
-                icon: Icon(
-                  favoritePetsProvider.isFavorite(petId)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: favoritePetsProvider.isFavorite(petId)
-                      ? Colors.red
-                      : Colors.grey,
-                  size: size.width * 0.072,
-                ),
+                onPressed: onFavoriteTap,
+                icon: favoriteIcon,
               ),
             ),
           ],

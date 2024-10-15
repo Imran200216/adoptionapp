@@ -1,6 +1,8 @@
 import 'package:adoptionapp/constants/colors.dart';
+import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
+import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/custom_internet_checker.dart';
@@ -28,7 +30,10 @@ class HomeScreen extends StatelessWidget {
     final internetCheckerProvider =
         Provider.of<InternetCheckerProvider>(context);
 
-    // Define the pet categories and SVG icons
+    /// favorite provider
+    final favoriteProvider = Provider.of<AddPetFavoriteProvider>(context);
+
+    /// Define the pet categories and SVG icons
     final List<Map<String, String>> petCategories = [
       {'name': 'All', 'icon': 'assets/images/svg/all.svg'},
       {'name': 'Cats', 'icon': 'assets/images/svg/cat.svg'},
@@ -181,10 +186,10 @@ class HomeScreen extends StatelessWidget {
                             );
                           }
 
-                          // Get all pets initially
+                          /// Get all pets initially
                           final allPets = snapshot.data!.docs;
 
-                          // Filter pets based on selected category
+                          /// Filter pets based on selected category
                           final filteredPets =
                               petProvider.selectedCategory == 'All'
                                   ? allPets
@@ -195,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                                           petProvider.selectedCategory;
                                     }).toList();
 
-                          // If no pets match the selected category, show the empty animation
+                          /// If no pets match the selected category, show the empty animation
                           if (filteredPets.isEmpty) {
                             return Center(
                               child: Column(
@@ -221,45 +226,75 @@ class HomeScreen extends StatelessWidget {
                             );
                           }
 
-                          // If pets are found, display them
+                          /// If pets are found, display them
                           return ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: filteredPets.length,
                             itemBuilder: (context, index) {
-                              var pet = filteredPets[index];
-                              return OpenContainer(
-                                transitionType: ContainerTransitionType.fade,
-                                transitionDuration:
-                                    const Duration(milliseconds: 800),
-                                openBuilder:
-                                    (BuildContext context, VoidCallback _) {
-                                  return const PetDescriptionScreen();
-                                },
-                                closedShape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                closedElevation: 0.0,
-                                openElevation: 0.0,
-                                closedColor: AppColors.secondaryColor,
-                                openColor: AppColors.secondaryColor,
-                                closedBuilder: (BuildContext context,
-                                    VoidCallback openContainer) {
-                                  return InkWell(
-                                    onTap: openContainer,
-                                    child: PetCard(
-                                      petId: pet['petId'] ?? "",
-                                      imageUrl: pet['petImages'][0] ?? "",
-                                      petName: pet['petName'] ?? "Unknown",
-                                      petBreed: pet['petBreed'] ?? "Unknown",
-                                      petGender: pet['petGender'] ?? "Unknown",
-                                      petAge: pet['petAge'] ?? 0,
-                                      petOwnerName:
-                                          pet['petOwnerName'] ?? "Unknown",
+                              // Get the pet data as a DocumentSnapshot
+                              var petSnapshot = filteredPets[index];
+
+                              // Ensure that petSnapshot is of type DocumentSnapshot
+                              if (petSnapshot is DocumentSnapshot) {
+                                // Extract the data as a Map<String, dynamic>
+                                var petData =
+                                    petSnapshot.data() as Map<String, dynamic>?;
+
+                                // Check if petData is not null before creating an instance of PetModels
+                                if (petData != null) {
+                                  // Create an instance of PetModels from the pet data
+                                  PetModels pet =
+                                      PetModels.fromFirestore(petData);
+
+                                  return OpenContainer(
+                                    transitionType:
+                                        ContainerTransitionType.fade,
+                                    transitionDuration:
+                                        const Duration(milliseconds: 800),
+                                    openBuilder:
+                                        (BuildContext context, VoidCallback _) {
+                                      // Pass the pet object to PetDescriptionScreen
+                                      return PetDescriptionScreen(pet: pet);
+                                    },
+                                    closedShape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
                                     ),
+                                    closedElevation: 0.0,
+                                    openElevation: 0.0,
+                                    closedColor: AppColors.secondaryColor,
+                                    openColor: AppColors.secondaryColor,
+                                    closedBuilder: (BuildContext context,
+                                        VoidCallback openContainer) {
+                                      return InkWell(
+                                        onTap: openContainer,
+                                        child: PetCard(
+                                          onFavoriteTap: () {
+                                            /// add to favorite using provider
+                                          },
+                                          favoriteIcon:
+                                              const Icon(Icons.favorite),
+                                          petId: pet.petId,
+                                          imageUrl: pet.petImages.isNotEmpty
+                                              ? pet.petImages[0]
+                                              : "Pet Image",
+                                          petName: pet.petName,
+                                          petBreed: pet.petBreed,
+                                          petGender: pet.petGender,
+                                          petAge: pet.petAge,
+                                          petOwnerName: pet.petOwnerName,
+                                        ),
+                                      );
+                                    },
                                   );
-                                },
-                              );
+                                } else {
+                                  // Handle null pet data if necessary
+                                  return const SizedBox(); // Or some placeholder
+                                }
+                              } else {
+                                // Handle the case where petSnapshot is not a DocumentSnapshot
+                                return const SizedBox(); // Or some placeholder
+                              }
                             },
                             separatorBuilder:
                                 (BuildContext context, int index) {

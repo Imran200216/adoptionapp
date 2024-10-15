@@ -1,4 +1,5 @@
 class PetModels {
+  final String userUid;
   final String petId;
   final String petName;
   final String petBreed;
@@ -13,7 +14,8 @@ class PetModels {
   final String petGender;
   final String petOwnerName;
 
-  PetModels({
+  PetModels(
+    this.userUid, {
     required this.petId,
     required this.petName,
     required this.petBreed,
@@ -32,7 +34,8 @@ class PetModels {
   /// Convert the PetModels instance to a JSON-friendly Map
   Map<String, dynamic> toJson() {
     return {
-      'petId': petId, // Include petId in the JSON map
+      'userUid': userUid,
+      'petId': petId,
       'petName': petName,
       'petBreed': petBreed,
       'petDescription': petDescription,
@@ -51,6 +54,7 @@ class PetModels {
   /// Factory constructor to create a PetModels instance from a Firestore document
   factory PetModels.fromFirestore(Map<String, dynamic> data) {
     return PetModels(
+      data['userUid'] ?? '',
       petId: data['petId'] ?? '',
       petName: data['petName'] ?? '',
       petBreed: data['petBreed'] ?? '',

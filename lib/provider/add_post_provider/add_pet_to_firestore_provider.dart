@@ -3,6 +3,7 @@ import 'package:adoptionapp/helper/debounce_helper.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
 import 'package:adoptionapp/widgets/toast_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +13,7 @@ import 'package:uuid/uuid.dart';
 
 class AddPetToFireStoreProvider extends ChangeNotifier {
   /// Debounce helper
-  final DebounceHelper _debounceHelper = DebounceHelper();
+  final DebounceHelper debounceHelper = DebounceHelper();
 
   /// TextEditingControllers for form fields
   TextEditingController petNameController = TextEditingController();
@@ -60,6 +61,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   /// Methods for setting values
   void setPetAge(int value) {
     _selectedPetAge = value;
+    petAgeController.text = value.toString();
     notifyListeners();
   }
 
@@ -123,77 +125,99 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   }
 
   Future<void> addPetToFireStore(BuildContext context) async {
-    String petName = petNameController.text;
-    String petOwnerName = petOwnerNameController.text;
-    String petBreed = petBreedController.text;
-    String petDescription = petDescriptionController.text;
-    int petAge = int.tryParse(petAgeController.text) ?? 0;
-    int petWeight = int.tryParse(petWeightController.text) ?? 0;
-    String petLocation = petLocationController.text;
-    String petOwnerPhone = petOwnerPhoneController.text;
+    // Check if debounce is already active, if not, proceed
+    if (!debounceHelper.isDebounced()) {
+      debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
 
-    /// Validate the form fields
-    if (petName.isEmpty ||
-        petBreed.isEmpty ||
-        petDescription.isEmpty ||
-        petImages.isEmpty) {
-      ToastHelper.showErrorToast(
-        context: context,
-        message: "Please fill in all fields",
-      );
-      return;
-    }
+      String petName = petNameController.text;
+      String petOwnerName = petOwnerNameController.text;
+      String petBreed = petBreedController.text;
+      String petDescription = petDescriptionController.text;
 
-    // Set loading to true
-    setLoading(true);
+      // Use the selected age directly
+      int petAge = _selectedPetAge;
 
-    try {
-      /// Upload images and get URLs
-      List<String> imageUrls = await uploadImages(petName, context);
+      int petWeight = int.tryParse(petWeightController.text) ?? 0;
+      String petLocation = petLocationController.text;
+      String petOwnerPhone = petOwnerPhoneController.text;
 
-      /// Generate a unique pet ID
-      String petId = const Uuid().v4();
+      /// Validate the form fields
+      if (petName.isEmpty ||
+          petBreed.isEmpty ||
+          petDescription.isEmpty ||
+          petImages.isEmpty) {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Please fill in all fields",
+        );
+        return;
+      }
 
-      /// Create a PetModels instance
-      PetModels pet = PetModels(
-        petId: petId,
-        petOwnerName: petOwnerName,
-        petName: petName,
-        petBreed: petBreed,
-        petDescription: petDescription,
-        petAge: petAge,
-        petWeight: petWeight,
-        petLocation: petLocation,
-        petOwnerPhoneNumber: petOwnerPhone,
-        petGender: _selectedGender,
-        petCategory: _selectedPetType,
-        isVaccinated: _vaccinationStatus == 'Vaccination Done',
-        petImages: imageUrls,
-      );
+      // Set loading to true
+      setLoading(true);
 
-      // Add pet data to Firestore
-      await _firestore.collection('pets').doc(petId).set(pet.toJson());
+      try {
+        /// Upload images and get URLs
+        List<String> imageUrls = await uploadImages(petName, context);
 
-      ToastHelper.showSuccessToast(
-        context: context,
-        message: "Pet added to adoption successfully!",
-      );
+        /// Generate a unique pet ID
+        String petId = const Uuid().v4();
 
-      // Obtain the BottomNavProvider to navigate to the Home tab
-      final bottomNavProvider =
-          Provider.of<BottomNavProvider>(context, listen: false);
-      bottomNavProvider.navigateToIndex(context, 0);
+        /// Get the current authenticated user's UID
+        final User? user = FirebaseAuth.instance.currentUser;
+        final String userUid = user?.uid ?? ''; // Handle case if user is null
 
-      // Clear form data after successful upload
-      clearForm();
-    } catch (e) {
-      ToastHelper.showErrorToast(
-        context: context,
-        message: "Failed to add pet: $e.",
-      );
-    } finally {
-      // Set loading to false
-      setLoading(false);
+        if (userUid.isEmpty) {
+          // If user is not authenticated or uid is empty, show an error
+          ToastHelper.showErrorToast(
+            context: context,
+            message: "User not authenticated.",
+          );
+          return;
+        }
+
+        /// Create a PetModels instance
+        PetModels pet = PetModels(
+          userUid,
+          petId: petId,
+          petOwnerName: petOwnerName,
+          petName: petName,
+          petBreed: petBreed,
+          petDescription: petDescription,
+          petAge: petAge,
+          petWeight: petWeight,
+          petLocation: petLocation,
+          petOwnerPhoneNumber: petOwnerPhone,
+          petGender: _selectedGender,
+          petCategory: _selectedPetType,
+          isVaccinated: _vaccinationStatus == 'Vaccination Done',
+          petImages: imageUrls,
+        );
+
+        // Add pet data to Firestore
+        await _firestore.collection('pets').doc(petId).set(pet.toJson());
+
+        ToastHelper.showSuccessToast(
+          context: context,
+          message: "Pet added to adoption successfully!",
+        );
+
+        // Obtain the BottomNavProvider to navigate to the Home tab
+        final bottomNavProvider =
+            Provider.of<BottomNavProvider>(context, listen: false);
+        bottomNavProvider.navigateToIndex(context, 0);
+
+        // Clear form data after successful upload
+        clearForm();
+      } catch (e) {
+        ToastHelper.showErrorToast(
+          context: context,
+          message: "Failed to add pet: $e.",
+        );
+      } finally {
+        // Set loading to false
+        setLoading(false);
+      }
     }
   }
 
