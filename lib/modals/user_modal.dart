@@ -1,4 +1,3 @@
-
 class UserModal {
   String? uid;
   String? userName;
