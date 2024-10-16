@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -83,6 +84,39 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   /// Method to pick an image from gallery or camera
   Future<void> pickImage(ImageSource source, BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
+
+    // Check for permission based on the source (Camera or Gallery)
+    if (source == ImageSource.camera) {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        // Request permission if not granted
+        status = await Permission.camera.request();
+        if (!status.isGranted) {
+          // Show error if permission is denied
+          ToastHelper.showErrorToast(
+            context: context,
+            message: "Camera permission is required to take pictures.",
+          );
+          return;
+        }
+      }
+    } else if (source == ImageSource.gallery) {
+      var status = await Permission.photos.status;
+      if (!status.isGranted) {
+        // Request permission if not granted
+        status = await Permission.photos.request();
+        if (!status.isGranted) {
+          // Show error if permission is denied
+          ToastHelper.showErrorToast(
+            context: context,
+            message: "Gallery access is required to pick images.",
+          );
+          return;
+        }
+      }
+    }
+
+    // Pick the image
     final XFile? pickedFile = await _picker.pickImage(source: source);
 
     if (pickedFile != null) {

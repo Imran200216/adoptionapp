@@ -7,6 +7,7 @@ import 'package:adoptionapp/provider/app_required_providers/in_app_review_provid
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/scroll_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/share_app_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/password_visibility_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
@@ -139,6 +140,11 @@ class MyApp extends StatelessWidget {
         /// search provider
         ChangeNotifierProvider(
           create: (_) => SearchProvider(),
+        ),
+
+        /// share app provider
+        ChangeNotifierProvider(
+          create: (_) => ShareProvider(),
         ),
       ],
       builder: (context, child) {

@@ -2,6 +2,7 @@ import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/constants/textStyles.dart';
 import 'package:adoptionapp/provider/app_required_providers/app_version_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/in_app_review_provider.dart';
+import 'package:adoptionapp/provider/app_required_providers/share_app_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
@@ -33,7 +34,11 @@ class ProfileScreen extends StatelessWidget {
           .fetchEmailUserDetails();
     }
 
+    /// media query
     final size = MediaQuery.of(context).size;
+
+    /// share provider
+    final shareProvider = Provider.of<ShareProvider>(context, listen: false);
 
     return SafeArea(
       child: Scaffold(
@@ -54,6 +59,11 @@ class ProfileScreen extends StatelessWidget {
             inAppReviewProvider,
             child,
           ) {
+            /// Fetch correct user data based on sign-in method
+            final avatarUrl = user!.isAnonymous
+                ? guestUserDetailsProvider.selectedAvatarURL
+                : emailUserDetailsProvider.selectedAvatarURL;
+
             return SingleChildScrollView(
               child: Container(
                 margin: const EdgeInsets.only(
@@ -75,78 +85,39 @@ class ProfileScreen extends StatelessWidget {
                     SizedBox(
                       height: size.height * 0.04,
                     ),
-                    user!.isAnonymous
-                        ? AvatarGlow(
-                            startDelay: const Duration(microseconds: 1000),
-                            repeat: true,
-                            glowRadiusFactor: 0.12,
-                            child: Material(
-                              elevation: 0.1,
-                              shape: const CircleBorder(),
-                              color: AppColors.primaryColor,
-                              child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.16,
-                                width:
-                                    MediaQuery.of(context).size.height * 0.16,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: guestUserDetailsProvider
-                                            .selectedAvatarURL ??
-                                        "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.secondaryColor,
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) => Icon(
-                                      Icons.error,
-                                      color: AppColors.secondaryColor,
-                                    ),
-                                  ),
+                    AvatarGlow(
+                      startDelay: const Duration(microseconds: 1000),
+                      repeat: true,
+                      glowRadiusFactor: 0.12,
+                      child: Material(
+                        elevation: 0.1,
+                        shape: const CircleBorder(),
+                        color: AppColors.primaryColor,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.16,
+                          width: MediaQuery.of(context).size.height * 0.16,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: avatarUrl ??
+                                  "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.secondaryColor,
                                 ),
                               ),
-                            ),
-                          )
-                        : AvatarGlow(
-                            startDelay: const Duration(microseconds: 1000),
-                            repeat: true,
-                            glowRadiusFactor: 0.12,
-                            child: Material(
-                              elevation: 0.1,
-                              shape: const CircleBorder(),
-                              color: AppColors.primaryColor,
-                              child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.16,
-                                width:
-                                    MediaQuery.of(context).size.height * 0.16,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        "https://images.unsplash.com/photo-1496346236646-50e985b31ea4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.secondaryColor,
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) => Icon(
-                                      Icons.error,
-                                      color: AppColors.secondaryColor,
-                                    ),
-                                  ),
-                                ),
+                              errorWidget: (context, url, error) => Icon(
+                                Icons.error,
+                                color: AppColors.secondaryColor,
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
@@ -210,8 +181,8 @@ class ProfileScreen extends StatelessWidget {
 
                     /// app invite functionality
                     CustomListTile(
-                      listTileOnTap: () {
-                        /// invite friend functionality must be added
+                      listTileOnTap: () async {
+                        await shareProvider.shareAppLink(context);
                       },
                       leadingListTilePath: "invite-icon",
                       leadingListTileBgColor: AppColors.listLeadingBgColor,
@@ -252,7 +223,6 @@ class ProfileScreen extends StatelessWidget {
                     ),
 
                     /// logout
-
                     user.isAnonymous
                         ? CustomListTile(
                             listTileOnTap: () {
