@@ -29,4 +29,18 @@ class CarouselProvider extends ChangeNotifier {
       }
     });
   }
+
+  int currentIndex = 0;
+
+  /// svg list for chat bot intro screen
+  final List<String> svgList = [
+    'assets/images/svg/introchatbot-img1.svg',
+    'assets/images/svg/introchatbot-img2.svg',
+    'assets/images/svg/introchatbot-img3.svg',
+  ];
+
+  void updateIndex(int index) {
+    currentIndex = index;
+    notifyListeners();
+  }
 }

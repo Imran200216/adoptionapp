@@ -29,7 +29,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   // Properties for pet details
   String _selectedPetType = 'Dog';
   String _selectedGender = 'male';
-  String _vaccinationStatus = 'Vaccination Done';
+  String _vaccinationStatus = 'Vaccination Done'; // Default value
   int _selectedPetAge = 1;
   List<File> petImages = [];
 
@@ -78,6 +78,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
 
   void setVaccinationStatus(String value) {
     _vaccinationStatus = value;
+    print("Vaccination Status: $_vaccinationStatus"); // Debugging information
     notifyListeners();
   }
 
@@ -89,10 +90,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     if (source == ImageSource.camera) {
       var status = await Permission.camera.status;
       if (!status.isGranted) {
-        // Request permission if not granted
         status = await Permission.camera.request();
         if (!status.isGranted) {
-          // Show error if permission is denied
           ToastHelper.showErrorToast(
             context: context,
             message: "Camera permission is required to take pictures.",
@@ -103,10 +102,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     } else if (source == ImageSource.gallery) {
       var status = await Permission.photos.status;
       if (!status.isGranted) {
-        // Request permission if not granted
         status = await Permission.photos.request();
         if (!status.isGranted) {
-          // Show error if permission is denied
           ToastHelper.showErrorToast(
             context: context,
             message: "Gallery access is required to pick images.",
@@ -158,8 +155,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     return imageUrls;
   }
 
+  /// Method to add the pet to Firestore
   Future<void> addPetToFireStore(BuildContext context) async {
-    // Check if debounce is already active, if not, proceed
     if (!debounceHelper.isDebounced()) {
       debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
 
@@ -167,15 +164,12 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       String petOwnerName = petOwnerNameController.text;
       String petBreed = petBreedController.text;
       String petDescription = petDescriptionController.text;
-
-      // Use the selected age directly
       int petAge = _selectedPetAge;
-
       int petWeight = int.tryParse(petWeightController.text) ?? 0;
       String petLocation = petLocationController.text;
       String petOwnerPhone = petOwnerPhoneController.text;
 
-      /// Validate the form fields
+      // Validate form fields
       if (petName.isEmpty ||
           petBreed.isEmpty ||
           petDescription.isEmpty ||
@@ -187,22 +181,20 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         return;
       }
 
-      // Set loading to true
       setLoading(true);
 
       try {
-        /// Upload images and get URLs
+        // Upload images and get URLs
         List<String> imageUrls = await uploadImages(petName, context);
 
-        /// Generate a unique pet ID
+        // Generate a unique pet ID
         String petId = const Uuid().v4();
 
-        /// Get the current authenticated user's UID
+        // Get the current authenticated user's UID
         final User? user = FirebaseAuth.instance.currentUser;
-        final String userUid = user?.uid ?? ''; // Handle case if user is null
+        final String userUid = user?.uid ?? '';
 
         if (userUid.isEmpty) {
-          // If user is not authenticated or uid is empty, show an error
           ToastHelper.showErrorToast(
             context: context,
             message: "User not authenticated.",
@@ -210,7 +202,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           return;
         }
 
-        /// Create a PetModels instance
+        // Create PetModels instance
         PetModels pet = PetModels(
           userUid,
           petId: petId,
@@ -236,7 +228,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           message: "Pet added to adoption successfully!",
         );
 
-        // Obtain the BottomNavProvider to navigate to the Home tab
+        // Navigate to the Home tab
         final bottomNavProvider =
             Provider.of<BottomNavProvider>(context, listen: false);
         bottomNavProvider.navigateToIndex(context, 0);
@@ -249,7 +241,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           message: "Failed to add pet: $e.",
         );
       } finally {
-        // Set loading to false
         setLoading(false);
       }
     }
@@ -257,7 +248,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
 
   // Clear form data and reset state
   void clearForm() {
-    // Clear the text fields
     petNameController.clear();
     petBreedController.clear();
     petDescriptionController.clear();
@@ -265,17 +255,11 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petWeightController.clear();
     petLocationController.clear();
     petOwnerPhoneController.clear();
-
-    // Clear the images list
     petImages.clear();
-
-    // Reset dropdowns and radio selections
     _selectedPetType = 'Dog';
     _selectedGender = 'male';
     _vaccinationStatus = 'Vaccination Done';
     _selectedPetAge = 1;
-
-    // Notify listeners to rebuild the UI
     notifyListeners();
   }
 

@@ -4,6 +4,8 @@ import 'package:adoptionapp/provider/app_required_providers/internet_checker_pro
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/search_provider/search_provider.dart';
+import 'package:adoptionapp/screens/chat_bot/chat_bot_intro_screen.dart';
+import 'package:adoptionapp/screens/chat_bot/chat_bot_screen.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/custom_internet_checker.dart';
@@ -12,8 +14,10 @@ import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -46,8 +50,43 @@ class HomeScreen extends StatelessWidget {
       {'name': 'Others', 'icon': 'assets/images/svg/other.svg'},
     ];
 
+    /// check intro status
+    Future<void> checkIntroStatus(BuildContext context) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool isIntroSeen = prefs.getBool('isIntroSeen') ?? false;
+
+      if (!isIntroSeen) {
+        // If the intro is not seen, navigate to ChatBotIntroScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatBotIntroScreen()),
+        );
+      } else {
+        // Otherwise, navigate to the ChatBotScreen directly
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatBotScreen()),
+        );
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppColors.primaryColor,
+          onPressed: () {
+            // Check if the intro has been seen before navigating
+            checkIntroStatus(context);
+          },
+          child: Center(
+            child: SvgPicture.asset(
+              "assets/images/svg/chatbot-icon.svg",
+              height: size.height * 0.036,
+              color: AppColors.secondaryColor,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

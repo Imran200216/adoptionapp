@@ -11,6 +11,9 @@ import 'package:adoptionapp/provider/app_required_providers/share_app_provider.d
 import 'package:adoptionapp/provider/auth_providers/guest_auth_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/password_visibility_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
+import 'package:adoptionapp/provider/chat_bot_provider/ai_chat_bot_intro_provider.dart';
+import 'package:adoptionapp/provider/chat_bot_provider/chat_bot_provider.dart';
+import 'package:adoptionapp/provider/chat_bot_provider/scroll_chat_provider.dart';
 import 'package:adoptionapp/provider/chat_request_provider/chat_request_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
@@ -145,6 +148,21 @@ class MyApp extends StatelessWidget {
         /// share app provider
         ChangeNotifierProvider(
           create: (_) => ShareProvider(),
+        ),
+
+        /// chat bot provider
+        ChangeNotifierProvider(
+          create: (_) => ChatBotProvider(),
+        ),
+
+        /// ai chat bot intro provider
+        ChangeNotifierProvider(
+          create: (_) => AiChatBotIntroProvider(),
+        ),
+
+        /// scroll chat provider
+        ChangeNotifierProvider(
+          create: (_) => ScrollChatProvider(),
         ),
       ],
       builder: (context, child) {
