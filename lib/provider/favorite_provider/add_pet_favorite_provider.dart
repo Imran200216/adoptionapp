@@ -1,78 +1,103 @@
+import 'package:adoptionapp/helper/debounce_helper.dart';
 import 'package:adoptionapp/widgets/toast_helper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddPetFavoriteProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final List<Map<String, dynamic>> _favoritePets = [];
+  final List<String> _favoritePetIds = [];
+  final DebounceHelper _debounceHelper =
+      DebounceHelper(); // Instantiate the debounce helper
 
-  List<Map<String, dynamic>> get favoritePets => _favoritePets;
+  List<String> get favoritePetIds => _favoritePetIds;
 
-  // Add pet to favorites
-  void addPetToFavorites(Map<String, dynamic> petData, BuildContext context) {
-    final User? currentUser = _auth.currentUser;
+  AddPetFavoriteProvider() {
+    _loadFavoritePets();
+  }
 
-    // Check if user is logged in
-    if (currentUser == null) {
-      ToastHelper.showErrorToast(
-        context: context,
-        message: "Please log in to add favorites",
-      );
-      return;
+  Future<void> _loadFavoritePets() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection("favorites")
+          .where("userUid", isEqualTo: user.uid)
+          .get();
+
+      _favoritePetIds.clear();
+      for (var doc in snapshot.docs) {
+        _favoritePetIds.add(doc["petId"] as String);
+      }
+
+      notifyListeners();
     }
+  }
 
-    // Validate petData and petId
-    if (petData['petId'] == null) {
-      ToastHelper.showErrorToast(
-        context: context,
-        message: "Invalid pet data",
-      );
-      return;
-    }
+  /// Add a pet to favorites and persist it in Firestore with debounce
+  Future<void> addFavoritePet(String petId, BuildContext context) async {
+    if (_debounceHelper.isDebounced()) return; // Return if debounce is active
 
-    // Add pet to favorites if it doesn't already exist
-    if (!_favoritePets.any((pet) => pet['petId'] == petData['petId'])) {
-      _favoritePets.add(petData);
-      notifyListeners(); // Notify UI to refresh
+    _debounceHelper.activateDebounce(
+        duration: const Duration(seconds: 2)); // Activate debounce for 2 seconds
 
-      // Show success toast message
+    User? user = _auth.currentUser;
+    if (user != null && !_favoritePetIds.contains(petId)) {
+      _favoritePetIds.add(petId);
+
+      // Persist the favorite in Firestore
+      await FirebaseFirestore.instance.collection('favorites').add({
+        "userUid": user.uid,
+        "petId": petId,
+      });
+
+      // Show success toast
       ToastHelper.showSuccessToast(
         context: context,
-        message: "Added to favorite",
+        message: "Pet added to Favorite",
       );
-    } else {
-      // Show message if the pet is already in favorites
-      ToastHelper.showErrorToast(
-        context: context,
-        message: "Pet is already in favorites",
-      );
+
+      notifyListeners();
     }
   }
 
-  // Remove pet from favorites
-  void removePetFromFavorites(String petId, BuildContext context) {
-    // Validate petId
-    if (petId == null || petId.isEmpty) {
-      ToastHelper.showErrorToast(
+  /// Remove a pet from favorites and update Firestore with debounce
+  Future<void> removeFavoritePet(String petId, BuildContext context) async {
+    if (_debounceHelper.isDebounced()) return; // Return if debounce is active
+
+    _debounceHelper.activateDebounce(
+        duration: const Duration(seconds: 2)); // Activate debounce for 2 seconds
+
+    User? user = _auth.currentUser;
+    if (user != null && _favoritePetIds.contains(petId)) {
+      _favoritePetIds.remove(petId);
+
+      // Remove from Firestore
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('favorites')
+          .where('userUid', isEqualTo: user.uid)
+          .where('petId', isEqualTo: petId)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection('favorites')
+            .doc(doc.id)
+            .delete();
+      }
+
+      // Show remove toast
+      ToastHelper.showSuccessToast(
         context: context,
-        message: "Invalid pet ID",
+        message: "Pet removed from Favorite",
       );
-      return;
+
+      notifyListeners();
     }
-
-    // Remove pet from favorites
-    _favoritePets.removeWhere((pet) => pet['petId'] == petId);
-    notifyListeners(); // Notify UI to refresh
-
-    // Show success toast message
-    ToastHelper.showSuccessToast(
-      context: context,
-      message: "Removed from favorite",
-    );
   }
 
-  // Check if a pet is already in favorites
   bool isFavorite(String petId) {
-    return _favoritePets.any((pet) => pet['petId'] == petId);
+    return _favoritePetIds.contains(petId);
   }
 }

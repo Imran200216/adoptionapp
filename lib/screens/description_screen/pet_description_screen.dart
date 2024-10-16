@@ -1,9 +1,11 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
+import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
 import 'package:adoptionapp/widgets/circular_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_btn.dart';
+import 'package:adoptionapp/widgets/custom_message_request_dialog_box.dart';
 import 'package:adoptionapp/widgets/pet_description_content.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,11 +30,13 @@ class PetDescriptionScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Consumer2<PhoneCallProvider, PetDescriptionProvider>(
+        body: Consumer3<PhoneCallProvider, PetDescriptionProvider,
+            AddPetFavoriteProvider>(
           builder: (
             context,
             phoneCallProvider,
             petDescriptionProvider,
+            favoriteProvider,
             child,
           ) {
             return Container(
@@ -63,11 +67,26 @@ class PetDescriptionScreen extends StatelessWidget {
 
                         /// favorite btn
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            /// add to favorite using provider
+                            if (favoriteProvider.isFavorite(pet.petId)) {
+                              // If the pet is already a favorite, remove it
+                              favoriteProvider.removeFavoritePet(
+                                  pet.petId, context);
+                            } else {
+                              // If the pet is not a favorite, add it
+                              favoriteProvider.addFavoritePet(
+                                  pet.petId, context);
+                            }
+                          },
                           icon: Icon(
-                            Icons.favorite,
-                            size: size.height * 0.03,
-                            color: AppColors.failureToastColor,
+                            favoriteProvider.isFavorite(pet.petId)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: favoriteProvider.isFavorite(pet.petId)
+                                ? AppColors.failureToastColor
+                                : AppColors.subTitleColor,
+                            size: size.width * 0.08,
                           ),
                         ),
                       ],
@@ -391,7 +410,23 @@ class PetDescriptionScreen extends StatelessWidget {
                                         width: size.width * 0.04,
                                       ),
                                       CircularIconBtn(
-                                        onTap: () {},
+                                        onTap: () {
+                                          /// allow the user to send chat request
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CustomMessageRequestDialogBox(
+                                                onAllow: () {
+                                                  /// send the request to the adoption owner to chat
+                                                },
+                                                onDeny: () {
+                                                  // Handle denying the request
+                                                  Navigator.of(context).pop();
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
                                         btnIcon: Icons.chat,
                                       ),
                                     ],

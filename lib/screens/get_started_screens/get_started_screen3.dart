@@ -54,11 +54,13 @@ class GetStartedScreen3 extends StatelessWidget {
           ),
 
           /// titles
-          Text(
+          AutoSizeText(
             textAlign: TextAlign.center,
-            "Open Your Heart to a Friend in Need",
+            "Find Your Perfect Companion",
             style: CustomTextStyles.getStartedTitleText(context),
+            maxLines: 1,
           ),
+
           SizedBox(
             height: size.height * 0.02,
           ),
@@ -67,7 +69,7 @@ class GetStartedScreen3 extends StatelessWidget {
           AutoSizeText(
             textAlign: TextAlign.center,
             "Join us in giving these wonderful animals a loving home. Browse through our furry, feathered, and scaly friends to find your next family member.",
-            maxLines: 3,
+            maxLines: 4,
             style: CustomTextStyles.getStartedSubTitleText(context),
           ),
         ],

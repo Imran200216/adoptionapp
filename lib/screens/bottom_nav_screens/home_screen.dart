@@ -3,6 +3,7 @@ import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
+import 'package:adoptionapp/provider/search_provider/search_provider.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/custom_internet_checker.dart';
@@ -32,6 +33,9 @@ class HomeScreen extends StatelessWidget {
 
     /// favorite provider
     final favoriteProvider = Provider.of<AddPetFavoriteProvider>(context);
+
+    /// search provider
+    final searchProvider = Provider.of<SearchProvider>(context);
 
     /// Define the pet categories and SVG icons
     final List<Map<String, String>> petCategories = [
@@ -95,6 +99,10 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: TextField(
+                        onChanged: (value) {
+                          /// search functionality
+                          searchProvider.setSearchQuery(value);
+                        },
                         style: TextStyle(
                           fontSize: size.width * 0.04,
                           color: AppColors.blackColor,
@@ -189,18 +197,28 @@ class HomeScreen extends StatelessWidget {
                           /// Get all pets initially
                           final allPets = snapshot.data!.docs;
 
-                          /// Filter pets based on selected category
-                          final filteredPets =
-                              petProvider.selectedCategory == 'All'
-                                  ? allPets
-                                  : allPets.where((pet) {
-                                      final petCategory = pet['petCategory'] ??
-                                          'Others'; // Replace with your actual field name
-                                      return petCategory ==
-                                          petProvider.selectedCategory;
-                                    }).toList();
+                          /// Filter pets based on selected category and search query
+                          final filteredPets = allPets.where((pet) {
+                            final petCategory = pet['petCategory'] ??
+                                'Others'; // Replace with your actual field name
+                            final petName = pet['petName']?.toLowerCase() ?? '';
+                            final petBreed =
+                                pet['petBreed']?.toLowerCase() ?? '';
+                            final searchQuery =
+                                searchProvider.searchQuery.toLowerCase();
 
-                          /// If no pets match the selected category, show the empty animation
+                            final matchesCategory =
+                                petProvider.selectedCategory == 'All' ||
+                                    petCategory == petProvider.selectedCategory;
+
+                            final matchesSearchQuery = searchQuery.isEmpty ||
+                                petName.contains(searchQuery) ||
+                                petBreed.contains(searchQuery);
+
+                            return matchesCategory && matchesSearchQuery;
+                          }).toList();
+
+                          /// If no pets match the selected category or search query, show the empty animation
                           if (filteredPets.isEmpty) {
                             return Center(
                               child: Column(
@@ -212,7 +230,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                   AutoSizeText(
                                     textAlign: TextAlign.start,
-                                    'No pets found in this category!',
+                                    'No pets found in this category or search query!',
                                     maxLines: 2,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
@@ -236,64 +254,69 @@ class HomeScreen extends StatelessWidget {
                               var petSnapshot = filteredPets[index];
 
                               // Ensure that petSnapshot is of type DocumentSnapshot
-                              if (petSnapshot is DocumentSnapshot) {
-                                // Extract the data as a Map<String, dynamic>
-                                var petData =
-                                    petSnapshot.data() as Map<String, dynamic>?;
+                              // Extract the data as a Map<String, dynamic>
+                              var petData =
+                                  petSnapshot.data() as Map<String, dynamic>?;
 
-                                // Check if petData is not null before creating an instance of PetModels
-                                if (petData != null) {
-                                  // Create an instance of PetModels from the pet data
-                                  PetModels pet =
-                                      PetModels.fromFirestore(petData);
+                              // Check if petData is not null before creating an instance of PetModels
+                              if (petData != null) {
+                                // Create an instance of PetModels from the pet data
+                                PetModels pet =
+                                    PetModels.fromFirestore(petData);
 
-                                  return OpenContainer(
-                                    transitionType:
-                                        ContainerTransitionType.fade,
-                                    transitionDuration:
-                                        const Duration(milliseconds: 800),
-                                    openBuilder:
-                                        (BuildContext context, VoidCallback _) {
-                                      // Pass the pet object to PetDescriptionScreen
-                                      return PetDescriptionScreen(pet: pet);
-                                    },
-                                    closedShape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                    closedElevation: 0.0,
-                                    openElevation: 0.0,
-                                    closedColor: AppColors.secondaryColor,
-                                    openColor: AppColors.secondaryColor,
-                                    closedBuilder: (BuildContext context,
-                                        VoidCallback openContainer) {
-                                      return InkWell(
-                                        onTap: openContainer,
-                                        child: PetCard(
-                                          onFavoriteTap: () {
-                                            /// add to favorite using provider
-                                          },
-                                          favoriteIcon:
-                                              const Icon(Icons.favorite),
-                                          petId: pet.petId,
-                                          imageUrl: pet.petImages.isNotEmpty
-                                              ? pet.petImages[0]
-                                              : "Pet Image",
-                                          petName: pet.petName,
-                                          petBreed: pet.petBreed,
-                                          petGender: pet.petGender,
-                                          petAge: pet.petAge,
-                                          petOwnerName: pet.petOwnerName,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  // Handle null pet data if necessary
-                                  return const SizedBox(); // Or some placeholder
-                                }
+                                return OpenContainer(
+                                  transitionType: ContainerTransitionType.fade,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 800),
+                                  openBuilder:
+                                      (BuildContext context, VoidCallback _) {
+                                    // Pass the pet object to PetDescriptionScreen
+                                    return PetDescriptionScreen(pet: pet);
+                                  },
+                                  closedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  closedElevation: 0.0,
+                                  closedBuilder: (BuildContext context,
+                                      VoidCallback openContainer) {
+                                    return PetCard(
+                                      onFavoriteTap: () {
+                                        /// add to favorite using provider
+                                        if (favoriteProvider
+                                            .isFavorite(pet.petId)) {
+                                          // If the pet is already a favorite, remove it
+                                          favoriteProvider.removeFavoritePet(
+                                              pet.petId, context);
+                                        } else {
+                                          // If the pet is not a favorite, add it
+                                          favoriteProvider.addFavoritePet(
+                                              pet.petId, context);
+                                        }
+                                      },
+                                      favoriteIcon: Icon(
+                                        favoriteProvider.isFavorite(pet.petId)
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: favoriteProvider
+                                                .isFavorite(pet.petId)
+                                            ? AppColors.failureToastColor
+                                            : AppColors.subTitleColor,
+                                      ),
+                                      petId: pet.petId,
+                                      imageUrl: pet.petImages.isNotEmpty
+                                          ? pet.petImages[0]
+                                          : "Pet Image",
+                                      petName: pet.petName,
+                                      petBreed: pet.petBreed,
+                                      petGender: pet.petGender,
+                                      petAge: pet.petAge,
+                                      petOwnerName: pet.petOwnerName,
+                                    );
+                                  },
+                                );
                               } else {
-                                // Handle the case where petSnapshot is not a DocumentSnapshot
-                                return const SizedBox(); // Or some placeholder
+                                // Return an empty container if petData is null
+                                return Container();
                               }
                             },
                             separatorBuilder:

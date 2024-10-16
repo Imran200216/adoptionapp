@@ -55,11 +55,13 @@ class GetStartedScreen1 extends StatelessWidget {
           ),
 
           /// titles
-          Text(
+          AutoSizeText(
             textAlign: TextAlign.center,
             "Find Your Perfect Companion",
             style: CustomTextStyles.getStartedTitleText(context),
+            maxLines: 1,
           ),
+
           SizedBox(
             height: size.height * 0.02,
           ),

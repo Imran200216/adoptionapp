@@ -225,6 +225,7 @@ class ProfileScreen extends StatelessWidget {
                     CustomListTile(
                       listTileOnTap: () {
                         /// ratings functionality must be added
+                        inAppReviewProvider.triggerInAppReview(context);
                       },
                       leadingListTilePath: "rating-icon",
                       leadingListTileBgColor: AppColors.listLeadingBgColor,
