@@ -3,6 +3,8 @@ import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
+import 'package:adoptionapp/screens/bottom_nav_screens/chat_screen.dart';
+import 'package:adoptionapp/screens/chat_messaging_screen/chat_description_screen.dart';
 import 'package:adoptionapp/widgets/circular_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_btn.dart';
 import 'package:adoptionapp/widgets/custom_message_request_dialog_box.dart';
@@ -411,21 +413,12 @@ class PetDescriptionScreen extends StatelessWidget {
                                       ),
                                       CircularIconBtn(
                                         onTap: () {
-                                          /// allow the user to send chat request
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return CustomMessageRequestDialogBox(
-                                                onAllow: () {
-                                                  /// send the request to the adoption owner to chat
-                                                },
-                                                onDeny: () {
-                                                  // Handle denying the request
-                                                  Navigator.of(context).pop();
-                                                },
-                                              );
-                                            },
-                                          );
+                                          /// want to make the functionality of the chat of my userUID and another userUID to chat
+                                          Navigator.push(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                            return ChatDescriptionScreen();
+                                          }));
                                         },
                                         btnIcon: Icons.chat,
                                       ),
