@@ -18,7 +18,7 @@ import 'package:adoptionapp/provider/chat_request_provider/chat_request_provider
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
 import 'package:adoptionapp/provider/search_provider/search_provider.dart';
-import 'package:adoptionapp/provider/user_chat_provider/chat_provider.dart';
+import 'package:adoptionapp/provider/user_chat_provider/chat_room_provider.dart';
 import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/notification_provider.dart';
 import 'package:adoptionapp/provider/auth_providers/email_auth_provider.dart';
@@ -166,9 +166,9 @@ class MyApp extends StatelessWidget {
           create: (_) => ScrollChatProvider(),
         ),
 
-        /// user chat provider
+        /// chat room provider
         ChangeNotifierProvider(
-          create: (_) => UserChatProvider(),
+          create: (_) => ChatRoomProvider(),
         ),
       ],
       builder: (context, child) {

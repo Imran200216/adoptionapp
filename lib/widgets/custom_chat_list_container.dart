@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CustomChatListContainer extends StatelessWidget {
-  final String avatarUrl;
-  final String personName;
+  final String avatarUrl; // Should be userUid2AvatarUrl
+  final String personName; // Should be petOwnerName
   final String recentMessage;
   final int recentMessageIndication;
   final VoidCallback onTap;
@@ -22,6 +22,7 @@ class CustomChatListContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -41,7 +42,7 @@ class CustomChatListContainer extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  /// avatar
+                  /// Avatar
                   Container(
                     height: size.height * 0.12,
                     width: size.width * 0.12,
@@ -49,44 +50,39 @@ class CustomChatListContainer extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: CachedNetworkImage(
-                        imageUrl: avatarUrl,
-                        imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                        placeholder: (context, url) {
-                          return Center(
-                            child: LoadingAnimationWidget.discreteCircle(
-                              color: AppColors.primaryColor,
-                              size: size.width * 0.03,
-                            ),
-                          );
-                        },
-                        errorWidget: (context, url, error) {
-                          return Center(
-                            child: Icon(
-                              Icons.error,
-                              size: size.width * 0.03,
-                              color: AppColors.primaryColor,
-                            ),
-                          );
-                        }),
+                      imageUrl: avatarUrl,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      placeholder: (context, url) => Center(
+                        child: LoadingAnimationWidget.discreteCircle(
+                          color: AppColors.primaryColor,
+                          size: size.width * 0.03,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Icon(
+                          Icons.error,
+                          size: size.width * 0.03,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ),
                   ),
-                  SizedBox(
-                    width: size.width * 0.04,
-                  ),
+                  SizedBox(width: size.width * 0.04),
 
-                  /// chat messages
+                  /// Chat messages (person name + recent message)
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// person name
+                      /// Pet owner name
                       Text(
                         personName,
                         style: TextStyle(
@@ -97,9 +93,9 @@ class CustomChatListContainer extends StatelessWidget {
                         ),
                       ),
 
-                      /// chat message
+                      /// Recent message (or "Update Soon" if empty)
                       Text(
-                        recentMessage,
+                        recentMessage.isEmpty ? "Update Soon" : recentMessage,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: AppColors.subTitleColor,
@@ -112,24 +108,27 @@ class CustomChatListContainer extends StatelessWidget {
                 ],
               ),
 
-              /// recent chat indication number
-              Container(
-                height: size.height * 0.06,
-                width: size.width * 0.06,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: AppColors.primaryColor),
-                child: Center(
-                  child: Text(
-                    recentMessageIndication.toString(),
-                    style: TextStyle(
-                      fontFamily: "NunitoSans",
-                      fontSize: size.width * 0.03,
-                      color: AppColors.secondaryColor,
-                      fontWeight: FontWeight.w700,
+              /// Recent chat indication number
+              if (recentMessageIndication > 0)
+                Container(
+                  height: size.height * 0.06,
+                  width: size.width * 0.06,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primaryColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      recentMessageIndication.toString(),
+                      style: TextStyle(
+                        fontFamily: "NunitoSans",
+                        fontSize: size.width * 0.03,
+                        color: AppColors.secondaryColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

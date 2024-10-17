@@ -3,14 +3,14 @@ import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/app_required_providers/phone_call_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/pet_description_provider/pet_description_provider.dart';
-import 'package:adoptionapp/screens/bottom_nav_screens/chat_screen.dart';
+import 'package:adoptionapp/provider/user_chat_provider/chat_room_provider.dart';
 import 'package:adoptionapp/screens/chat_messaging_screen/chat_description_screen.dart';
 import 'package:adoptionapp/widgets/circular_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_btn.dart';
-import 'package:adoptionapp/widgets/custom_message_request_dialog_box.dart';
 import 'package:adoptionapp/widgets/pet_description_content.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -32,13 +32,14 @@ class PetDescriptionScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Consumer3<PhoneCallProvider, PetDescriptionProvider,
-            AddPetFavoriteProvider>(
+        body: Consumer4<PhoneCallProvider, PetDescriptionProvider,
+            AddPetFavoriteProvider, ChatRoomProvider>(
           builder: (
             context,
             phoneCallProvider,
             petDescriptionProvider,
             favoriteProvider,
+            chatRoomProvider,
             child,
           ) {
             return Container(
@@ -412,13 +413,86 @@ class PetDescriptionScreen extends StatelessWidget {
                                         width: size.width * 0.04,
                                       ),
                                       CircularIconBtn(
-                                        onTap: () {
-                                          /// want to make the functionality of the chat of my userUID and another userUID to chat
-                                          Navigator.push(context,
-                                              MaterialPageRoute(
+                                        onTap: () async {
+                                          final currentUser =
+                                              FirebaseAuth.instance.currentUser;
+
+                                          if (currentUser != null) {
+                                            final currentUserUid = currentUser
+                                                .uid; // Fetch the logged-in user UID
+                                            final otherUserUid = pet
+                                                .userUid; // UID of the user who posted the pet card
+                                            final petOwnerName = pet
+                                                .petOwnerName; // Owner's name
+                                            final currentUserName = currentUser
+                                                    .displayName ??
+                                                'Your Name'; // Current user's name
+
+                                            // Create or fetch the chat room
+                                            await context
+                                                .read<ChatRoomProvider>()
+                                                .createChatRoom(
+                                                  currentUserUid,
+                                                  otherUserUid,
+                                                  context,
+                                                );
+
+                                            // Fetch userUid1's avatar URL (current user)
+                                            final userUid1AvatarUrl =
+                                                await context
+                                                    .read<ChatRoomProvider>()
+                                                    .getUserAvatarUrl(
+                                                        currentUserUid);
+
+                                            // Fetch userUid2's avatar URL (other user)
+                                            final userUid2AvatarUrl =
+                                                await context
+                                                    .read<ChatRoomProvider>()
+                                                    .getUserAvatarUrl(
+                                                        otherUserUid);
+
+                                            // Check if user UIDs are different before navigating
+                                            if (currentUserUid !=
+                                                otherUserUid) {
+                                              // Get the roomId
+                                              String roomId = context
+                                                  .read<ChatRoomProvider>()
+                                                  .getRoomId(currentUserUid,
+                                                      otherUserUid);
+
+                                              // Navigate to the ChatDescriptionScreen
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
                                                   builder: (context) {
-                                            return ChatDescriptionScreen();
-                                          }));
+                                                    return ChatDescriptionScreen(
+                                                      roomId: roomId,
+                                                      userUid1: currentUserUid,
+                                                      // Current user's UID
+                                                      userUid2: otherUserUid,
+                                                      // Other user's UID
+                                                      userUid1Name:
+                                                          currentUserName,
+                                                      // Current user's name
+                                                      petOwnerName:
+                                                          petOwnerName,
+                                                      // Pet owner's name
+                                                      userUid1AvatarUrl:
+                                                          userUid1AvatarUrl ??
+                                                              '',
+                                                      // Avatar URL for current user
+                                                      userUid2AvatarUrl:
+                                                          userUid2AvatarUrl ??
+                                                              '', // Avatar URL for other user
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            }
+                                          } else {
+                                            // Handle case when user is not logged in
+                                            print("User is not logged in");
+                                          }
                                         },
                                         btnIcon: Icons.chat,
                                       ),
