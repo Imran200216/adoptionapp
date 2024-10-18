@@ -23,6 +23,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// to identify the current user
     final user = FirebaseAuth.instance.currentUser;
 
     // Fetch guest user details when the widget is built
@@ -61,8 +62,8 @@ class ProfileScreen extends StatelessWidget {
           ) {
             /// Fetch correct user data based on sign-in method
             final avatarUrl = user!.isAnonymous
-                ? guestUserDetailsProvider.selectedAvatarURL
-                : emailUserDetailsProvider.selectedAvatarURL;
+                ? guestUserDetailsProvider.avatarPhotoURL
+                : emailUserDetailsProvider.avatarPhotoURL;
 
             return SingleChildScrollView(
               child: Container(

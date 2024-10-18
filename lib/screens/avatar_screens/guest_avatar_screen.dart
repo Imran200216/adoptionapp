@@ -62,23 +62,28 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                     borderRadius: BorderRadius.zero,
                     color: AppColors.secondaryColor,
                   ),
-                  child: CustomIconBtn(
-                    btnHeight: size.height * 0.06,
-                    btnWidth: size.width,
-                    btnText: "All Set, Let's Go!",
-                    btnBorderRadius: 4,
-                    btnOnTap: () {
-                      /// moving to the next screen
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const GuestNickNameScreen();
-                      }));
-                    },
-                    btnIcon: Icons.navigate_next_outlined,
-                    btnColor: AppColors.primaryColor,
-                    btnTextColor: AppColors.secondaryColor,
-                    btnIconColor: AppColors.secondaryColor,
-                  ),
+                  child: userGuestDetailsProvider.isLoading
+                      ? LoadingAnimationWidget.discreteCircle(
+                          color: AppColors.primaryColor,
+                          size: size.width * 0.06,
+                        )
+                      : CustomIconBtn(
+                          btnHeight: size.height * 0.06,
+                          btnWidth: size.width,
+                          btnText: "All Set, Let's Go!",
+                          btnBorderRadius: 4,
+                          btnOnTap: () {
+                            /// moving to the next screen
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const GuestNickNameScreen();
+                            }));
+                          },
+                          btnIcon: Icons.navigate_next_outlined,
+                          btnColor: AppColors.primaryColor,
+                          btnTextColor: AppColors.secondaryColor,
+                          btnIconColor: AppColors.secondaryColor,
+                        ),
                 )
               : const SizedBox(),
           body: Container(

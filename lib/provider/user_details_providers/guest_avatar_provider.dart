@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GuestUserDetailsProvider extends ChangeNotifier {
   /// debounce mechanism
@@ -31,6 +31,20 @@ class GuestUserDetailsProvider extends ChangeNotifier {
   bool _isAvatarUpdated = false;
 
   bool get isAvatarUpdated => _isAvatarUpdated;
+
+  /// Listen for Firebase Auth state changes and fetch guest details when user is signed in
+  void listenForUserChanges() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null && user.isAnonymous) {
+        fetchGuestUserDetails(); // Fetch guest details when user is available
+      } else {
+        // Handle user not available or signed out
+        _nickname = null;
+        _avatarPhotoURL = null;
+        notifyListeners();
+      }
+    });
+  }
 
   // Fetch avatars from Firebase Storage
   Future<void> fetchAvatars() async {
@@ -180,11 +194,29 @@ class GuestUserDetailsProvider extends ChangeNotifier {
     }
   }
 
-  GuestUserDetailsProvider() {
-    fetchGuestUserDetails();
+  // Add this helper method to save data locally
+  Future<void> _saveUserDetailsLocally(
+      String nickname, String avatarUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('guestNickname', nickname);
+    await prefs.setString('guestAvatarURL', avatarUrl);
   }
 
-  // Fetch guest user details from Firestore
+  // Add this helper method to load data from local storage
+  Future<void> _loadUserDetailsFromLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    _nickname = prefs.getString('guestNickname');
+    _avatarPhotoURL = prefs.getString('guestAvatarURL');
+    notifyListeners();
+  }
+
+  // Modify your constructor to load data from local storage on start
+  GuestUserDetailsProvider() {
+    _loadUserDetailsFromLocalStorage(); // Load data from local storage
+    listenForUserChanges();
+  }
+
+  // Update fetchGuestUserDetails to save data locally
   Future<void> fetchGuestUserDetails() async {
     final User? user = FirebaseAuth.instance.currentUser;
 
@@ -204,6 +236,10 @@ class GuestUserDetailsProvider extends ChangeNotifier {
           if (newNickname != _nickname || newAvatarURL != _avatarPhotoURL) {
             _nickname = newNickname;
             _avatarPhotoURL = newAvatarURL;
+
+            // Save details locally
+            await _saveUserDetailsLocally(_nickname!, _avatarPhotoURL!);
+
             notifyListeners(); // Notify UI of data change
           }
         } else {
@@ -217,12 +253,5 @@ class GuestUserDetailsProvider extends ChangeNotifier {
       _avatarPhotoURL = null; // Clear avatar URL on sign out
       notifyListeners(); // Notify UI to reflect sign-out status
     }
-  }
-
-  // Clear selected avatar
-  void clearSelectedAvatar() {
-    selectedAvatarURL = null;
-    _isAvatarUpdated = false;
-    notifyListeners();
   }
 }

@@ -5,6 +5,7 @@ import 'package:adoptionapp/widgets/custom_chat_list_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -12,6 +13,9 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// media query
+    final size = MediaQuery.of(context).size;
+
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -46,7 +50,7 @@ class ChatScreen extends StatelessWidget {
                   builder: (context, chatRoomProvider, child) {
                     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                       stream: chatRoomProvider.getChatRooms(),
-                      // Stream from Firestore
+                      // Stream from Fire store
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -56,7 +60,27 @@ class ChatScreen extends StatelessWidget {
                         }
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(child: Text('No chat rooms available'));
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.asset(
+                                  "assets/lotties/empty-animation.json",
+                                  height: size.height * 0.35,
+                                  fit: BoxFit.cover,
+                                ),
+                                Text(
+                                  'No chat available',
+                                  style: TextStyle(
+                                    fontSize: size.width * 0.052,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.subTitleColor,
+                                    fontFamily: "NunitoSans",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         }
 
                         // Access the chat rooms data
