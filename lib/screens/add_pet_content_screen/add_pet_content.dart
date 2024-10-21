@@ -31,45 +31,59 @@ class AddPetContent extends StatelessWidget {
     var addPetToFireStoreProvider =
         Provider.of<AddPetToFireStoreProvider>(context);
 
+    /// closing alert dailog box
+    Future<bool> showExitConfirmationDialog(BuildContext context) async {
+      return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return CustomAlertDialog(
+            title: "Exit without saving?",
+            content:
+                "You have unsaved changes. Do you want to exit without saving?",
+            confirmText: "Exit",
+            cancelText: "Cancel",
+            onConfirm: () {
+              // Clear all the text fields
+              addPetToFireStoreProvider.clearForm();
+              Navigator.of(context).pop(false); // User cancels
+            },
+            onCancel: () {
+              // Close the dialog
+              Navigator.of(context).pop(true); // User confirms exit
+            },
+          );
+        },
+      ).then(
+          (value) => value ?? false); // Default to false if dialog is dismissed
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: AppColors.primaryColor,
           leading: IconButton(
-            onPressed: () {
-              bool isFormPartiallyFilled =
+            onPressed: () async {
+              // Check if there are unsaved changes
+              bool hasUnsavedChanges =
                   addPetToFireStoreProvider.isFormPartiallyFilled();
 
-              if (isFormPartiallyFilled) {
-                /// Show alert dialog if the form is partially filled
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CustomAlertDialog(
-                      title: "Exit without saving?",
-                      content:
-                          "You have unsaved changes. Do you want to exit without saving?",
-                      confirmText: "Exit",
-                      cancelText: "Cancel",
-                      onConfirm: () {
-                        /// clear all the text fields
-                        addPetToFireStoreProvider.clearForm();
-
-                        /// Close the dialog
-                        Navigator.of(context).pop();
-                        Navigator.pop(context);
-                      },
-                      onCancel: () {
-                        /// Close the dialog
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  },
-                );
+              if (hasUnsavedChanges) {
+                // Show confirmation dialog
+                final shouldExit = await showExitConfirmationDialog(context);
+                if (shouldExit) {
+                  // Navigate to the specific tab using BottomNavProvider
+                  final bottomNavProvider =
+                      Provider.of<BottomNavProvider>(context, listen: false);
+                  bottomNavProvider.navigateToIndex(
+                      context, 0); // Navigate to Home tab
+                }
               } else {
-                /// Simply navigate back if the form is not partially filled
-                Navigator.pop(context);
+                // No unsaved changes, navigate directly
+                final bottomNavProvider =
+                    Provider.of<BottomNavProvider>(context, listen: false);
+                bottomNavProvider.navigateToIndex(
+                    context, 0); // Navigate to Home tab
               }
             },
             icon: Icon(
@@ -374,6 +388,7 @@ class AddPetContent extends StatelessWidget {
                               ),
                             ),
                           ),
+
                           SizedBox(
                             height: size.height * 0.02,
                           ),

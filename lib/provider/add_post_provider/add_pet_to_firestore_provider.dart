@@ -69,7 +69,6 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   /// Methods for setting values
   void setPetAge(int value) {
     _selectedPetAge = value;
@@ -246,7 +245,8 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           petAge: petAge,
           petWeight: petWeight,
           petLocation: petLocation,
-          petOwnerPhoneNumber: petOwnerPhone, // Use the complete phone number
+          petOwnerPhoneNumber: petOwnerPhone,
+          // Use the complete phone number
           petGender: _selectedGender,
           petCategory: _selectedPetType,
           isVaccinated: _vaccinationStatus.toLowerCase() == 'vaccinated',
@@ -294,7 +294,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petImages.clear();
     _selectedPetType = 'Dog';
     _selectedGender = 'male';
-    _vaccinationStatus = 'Vaccination Done';
+    _vaccinationStatus = 'Vaccinated';
     _selectedPetAge = 1;
     notifyListeners();
   }
@@ -305,11 +305,10 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petBreedController.text.isNotEmpty ||
         petWeightController.text.isNotEmpty ||
         petOwnerNameController.text.isNotEmpty ||
-        petOwnerPhoneController.text.isNotEmpty ||
         petDescriptionController.text.isNotEmpty ||
         petImages.isNotEmpty ||
         selectedPetType.isNotEmpty ||
         selectedGender.isNotEmpty ||
-        vaccinationStatus.isNotEmpty;
+        completePhoneNumber.isNotEmpty;
   }
 }

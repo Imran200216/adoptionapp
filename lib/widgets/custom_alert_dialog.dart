@@ -39,7 +39,7 @@ class CustomAlertDialog extends StatelessWidget {
       contentTextStyle: TextStyle(
         fontFamily: "NunitoSans",
         color: AppColors.subTitleColor,
-        fontSize: size.width * 0.05,
+        fontSize: size.width * 0.04,
         fontWeight: FontWeight.w700,
       ),
       actions: [
