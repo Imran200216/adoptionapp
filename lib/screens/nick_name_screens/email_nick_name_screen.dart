@@ -5,6 +5,7 @@ import 'package:adoptionapp/widgets/custom_nick_name_textfield.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class EmailNickNameScreen extends StatelessWidget {
@@ -85,19 +86,24 @@ class EmailNickNameScreen extends StatelessWidget {
                       ),
 
                       /// updating the nickname to the database
-                      CustomIconBtn(
-                        btnHeight: size.height * 0.06,
-                        btnWidth: size.width,
-                        btnText: "All Set, Let's Go!",
-                        btnBorderRadius: 4,
-                        btnOnTap: () {
-                          emailUserDetailsProvider.setNickname(context);
-                        },
-                        btnIcon: Icons.navigate_next_outlined,
-                        btnColor: AppColors.primaryColor,
-                        btnTextColor: AppColors.secondaryColor,
-                        btnIconColor: AppColors.secondaryColor,
-                      ),
+                      emailUserDetailsProvider.isLoading
+                          ? LoadingAnimationWidget.discreteCircle(
+                              color: AppColors.primaryColor,
+                              size: size.width * 0.06,
+                            )
+                          : CustomIconBtn(
+                              btnHeight: size.height * 0.06,
+                              btnWidth: size.width,
+                              btnText: "All Set, Let's Go!",
+                              btnBorderRadius: 4,
+                              btnOnTap: () {
+                                emailUserDetailsProvider.setNickname(context);
+                              },
+                              btnIcon: Icons.navigate_next_outlined,
+                              btnColor: AppColors.primaryColor,
+                              btnTextColor: AppColors.secondaryColor,
+                              btnIconColor: AppColors.secondaryColor,
+                            ),
                     ],
                   ),
                 ),

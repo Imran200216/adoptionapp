@@ -64,7 +64,7 @@ class PetModels {
       petLocation: data['petLocation'] ?? '',
       petOwnerPhoneNumber: data['petOwnerPhoneNumber'] ?? '',
       petCategory: data['petCategory'] ?? '',
-      isVaccinated: (data['isVaccinated'] ?? false) as bool,
+      isVaccinated: data['isVaccinated'] == true,
       petImages: List<String>.from(data['petImages'] ?? []),
       petGender: data['petGender'] ?? '',
       petOwnerName: data['petOwnerName'] ?? '',

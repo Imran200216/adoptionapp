@@ -1,10 +1,8 @@
 import 'package:adoptionapp/constants/colors.dart';
-import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:provider/provider.dart';
 
 class PetCard extends StatelessWidget {
   final String petId;
@@ -32,10 +30,8 @@ class PetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// media query
     final size = MediaQuery.of(context).size;
-
-    // pet category provider
-    final favoritePetsProvider = Provider.of<AddPetFavoriteProvider>(context);
 
     return Container(
       height: size.height * 0.18,
@@ -50,7 +46,7 @@ class PetCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                // pet image
+                // Pet image
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
@@ -75,91 +71,95 @@ class PetCard extends StatelessWidget {
                 ),
                 SizedBox(width: size.width * 0.06),
 
-                /// Pet name
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      petName,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: size.width * 0.050,
-                        color: const Color(0xFF4D4C4C),
-                        fontFamily: "NunitoSans",
+                // Wrapping the Column in Expanded to take up the remaining space
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AutoSizeText(
+                        petName,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: size.width * 0.050,
+                          color: const Color(0xFF4D4C4C),
+                          fontFamily: "NunitoSans",
+                        ),
                       ),
-                    ),
+                      SizedBox(height: size.height * 0.002),
 
-                    SizedBox(height: size.height * 0.002),
-
-                    /// Pet breed
-                    AutoSizeText(
-                      petBreed,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: size.width * 0.040,
-                        color: const Color(0xFF4D4C4C),
-                        fontFamily: "NunitoSans",
+                      // Pet breed
+                      AutoSizeText(
+                        petBreed,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: size.width * 0.040,
+                          color: const Color(0xFF4D4C4C),
+                          fontFamily: "NunitoSans",
+                        ),
                       ),
-                    ),
+                      SizedBox(height: size.height * 0.002),
 
-                    SizedBox(height: size.height * 0.002),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        /// Pet gender
-                        AutoSizeText(
-                          "$petGender,",
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: size.width * 0.036,
-                            color: AppColors.subTitleColor,
-                            fontFamily: "NunitoSans",
+                      // Gender and age
+                      Row(
+                        children: [
+                          // Wrapping the gender and age texts in Flexible to prevent overflow
+                          Flexible(
+                            child: AutoSizeText(
+                              "$petGender,",
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: size.width * 0.036,
+                                color: AppColors.subTitleColor,
+                                fontFamily: "NunitoSans",
+                              ),
+                            ),
                           ),
-                        ),
-
-                        /// Pet age
-                        AutoSizeText(
-                          petAge.toString(),
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: size.width * 0.036,
-                            color: AppColors.subTitleColor,
-                            fontFamily: "NunitoSans",
+                          SizedBox(width: size.width * 0.02),
+                          // Add spacing between gender and age
+                          Flexible(
+                            child: AutoSizeText(
+                              petAge.toString(),
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: size.width * 0.036,
+                                color: AppColors.subTitleColor,
+                                fontFamily: "NunitoSans",
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.03),
 
-                    SizedBox(height: size.height * 0.03),
-
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person,
-                          color: AppColors.primaryColor,
-                          size: size.width * 0.06,
-                        ),
-                        SizedBox(width: size.width * 0.02),
-
-                        /// Pet owner name
-                        AutoSizeText(
-                          petOwnerName,
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: size.width * 0.040,
+                      // Owner information
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
                             color: AppColors.primaryColor,
-                            fontFamily: "NunitoSans",
+                            size: size.width * 0.06,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          SizedBox(width: size.width * 0.02),
+                          Expanded(
+                            child: AutoSizeText(
+                              petOwnerName,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: size.width * 0.040,
+                                color: AppColors.primaryColor,
+                                fontFamily: "NunitoSans",
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

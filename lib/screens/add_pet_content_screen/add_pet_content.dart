@@ -8,6 +8,7 @@ import 'package:adoptionapp/widgets/custom_description_text_field.dart';
 import 'package:adoptionapp/widgets/custom_drop_down_textfield.dart';
 import 'package:adoptionapp/widgets/custom_icon_btn.dart';
 import 'package:adoptionapp/widgets/custom_image_picker_bottom_modal_sheet.dart';
+import 'package:adoptionapp/widgets/custom_phone_text_field.dart';
 import 'package:adoptionapp/widgets/custom_radio.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -390,13 +391,18 @@ class AddPetContent extends StatelessWidget {
                           ),
 
                           /// pet owner contact text field
-                          AddTextField(
-                            textEditingController:
+                          CustomPhoneTextField(
+                            controller:
                                 addPetToFirebase.petOwnerPhoneController,
-                            prefixIconPath: "contact-icon",
                             hintText: "Pet owner contact",
-                            keyboardTextInputType: TextInputType.phone,
+                            initialCountryCode: 'IN',
+                            // Set your initial country code
+                            onChanged: (phone) {
+                              addPetToFirebase.setCompletePhoneNumber(
+                                  phone); // Save the complete phone number
+                            },
                           ),
+
                           SizedBox(
                             height: size.height * 0.04,
                           ),
@@ -430,11 +436,11 @@ class AddPetContent extends StatelessWidget {
                               ? Center(
                                   child: LoadingAnimationWidget.discreteCircle(
                                     color: AppColors.primaryColor,
-                                    size: size.width * 0.06,
+                                    size: size.width * 0.07,
                                   ),
                                 )
                               : CustomIconBtn(
-                                  btnHeight: 50,
+                                  btnHeight: size.height * 0.06,
                                   btnWidth: size.width,
                                   btnText: "Add adoption",
                                   btnBorderRadius: 6,

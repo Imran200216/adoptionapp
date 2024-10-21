@@ -204,7 +204,7 @@ class _GuestAvatarScreenState extends State<GuestAvatarScreen> {
                                             child: LoadingAnimationWidget
                                                 .threeArchedCircle(
                                               color: AppColors.primaryColor,
-                                              size: size.width * 0.04,
+                                              size: size.width * 0.06,
                                             ),
                                           ),
                                           errorWidget: (context, url, error) =>

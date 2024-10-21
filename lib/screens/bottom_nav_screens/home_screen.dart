@@ -289,11 +289,11 @@ class HomeScreen extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: filteredPets.length,
                             itemBuilder: (context, index) {
-                              // Get the pet data as a DocumentSnapshot
+                              /// Get the pet data as a DocumentSnapshot
                               var petSnapshot = filteredPets[index];
 
-                              // Ensure that petSnapshot is of type DocumentSnapshot
-                              // Extract the data as a Map<String, dynamic>
+                              /// Ensure that petSnapshot is of type DocumentSnapshot
+                              ///   Extract the data as a Map<String, dynamic>
                               var petData =
                                   petSnapshot.data() as Map<String, dynamic>?;
 

@@ -29,7 +29,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   // Properties for pet details
   String _selectedPetType = 'Dog';
   String _selectedGender = 'male';
-  String _vaccinationStatus = 'Vaccination Done'; // Default value
+  String _vaccinationStatus = 'Vaccinated';
   int _selectedPetAge = 1;
   List<File> petImages = [];
 
@@ -46,7 +46,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   /// Page controller for the image slider
   PageController pageController = PageController();
 
-  // Firebase Storage and Firestore instances
+  // Firebase Storage and Fire store instances
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -58,6 +58,17 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
   String get vaccinationStatus => _vaccinationStatus;
 
   int get selectedPetAge => _selectedPetAge;
+
+  // Save the complete phone number
+  String _completePhoneNumber = '';
+
+  String get completePhoneNumber => _completePhoneNumber;
+
+  void setCompletePhoneNumber(String phoneNumber) {
+    _completePhoneNumber = phoneNumber;
+    notifyListeners();
+  }
+
 
   /// Methods for setting values
   void setPetAge(int value) {
@@ -76,9 +87,20 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// for checking whether the vaccination status will be correct
+  late bool _isVaccinated;
+
   void setVaccinationStatus(String value) {
-    _vaccinationStatus = value;
-    print("Vaccination Status: $_vaccinationStatus"); // Debugging information
+    // Convert the selected option to a boolean
+    _vaccinationStatus = value.trim();
+    bool isVaccinatedBool =
+        _vaccinationStatus == 'Vaccinated'; // Convert to boolean
+    print(
+        "Vaccination Status: $_vaccinationStatus, isVaccinated: $isVaccinatedBool"); // Debugging information
+
+    // Update the isVaccinated field accordingly
+    _isVaccinated = isVaccinatedBool;
+
     notifyListeners();
   }
 
@@ -155,7 +177,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     return imageUrls;
   }
 
-  /// Method to add the pet to Firestore
+  /// Method to add the pet to Fire store
   Future<void> addPetToFireStore(BuildContext context) async {
     if (!debounceHelper.isDebounced()) {
       debounceHelper.activateDebounce(duration: const Duration(seconds: 2));
@@ -167,16 +189,27 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       int petAge = _selectedPetAge;
       int petWeight = int.tryParse(petWeightController.text) ?? 0;
       String petLocation = petLocationController.text;
-      String petOwnerPhone = petOwnerPhoneController.text;
+      String petOwnerPhone = completePhoneNumber;
 
       // Validate form fields
       if (petName.isEmpty ||
           petBreed.isEmpty ||
-          petDescription.isEmpty ||
-          petImages.isEmpty) {
+          petImages.isEmpty ||
+          petOwnerPhone.isEmpty ||
+          petOwnerName.isEmpty) {
         ToastHelper.showErrorToast(
           context: context,
           message: "Please fill in all fields",
+        );
+        return;
+      }
+
+      // Check for minimum length of pet description
+      if (petDescription.length < 15) {
+        ToastHelper.showErrorToast(
+          context: context,
+          message:
+              "Please fill detailed description\n(at least 15 characters).",
         );
         return;
       }
@@ -202,7 +235,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           return;
         }
 
-        // Create PetModels instance
+        // Create PetModels instance with proper isVaccinated boolean
         PetModels pet = PetModels(
           userUid,
           petId: petId,
@@ -213,10 +246,12 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
           petAge: petAge,
           petWeight: petWeight,
           petLocation: petLocation,
-          petOwnerPhoneNumber: petOwnerPhone,
+          petOwnerPhoneNumber: petOwnerPhone, // Use the complete phone number
           petGender: _selectedGender,
           petCategory: _selectedPetType,
-          isVaccinated: _vaccinationStatus == 'Vaccination Done',
+          isVaccinated: _vaccinationStatus.toLowerCase() == 'vaccinated',
+          // Adjust as necessary
+          // Case-insensitive check
           petImages: imageUrls,
         );
 
@@ -255,6 +290,7 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     petWeightController.clear();
     petLocationController.clear();
     petOwnerPhoneController.clear();
+    petOwnerNameController.clear();
     petImages.clear();
     _selectedPetType = 'Dog';
     _selectedGender = 'male';

@@ -55,31 +55,36 @@ class _EmailAvatarScreenState extends State<EmailAvatarScreen> {
         child: Scaffold(
           backgroundColor: AppColors.secondaryColor,
           bottomSheet: userEmailDetailsProvider.isAvatarUpdated
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.zero,
-                    color: AppColors.secondaryColor,
-                  ),
-                  child: CustomIconBtn(
-                    btnHeight: size.height * 0.06,
-                    btnWidth: size.width,
-                    btnText: "All Set, Let's Go!",
-                    btnBorderRadius: 4,
-                    btnOnTap: () {
-                      /// moving to the next screen
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const EmailNickNameScreen();
-                      }));
-                    },
-                    btnIcon: Icons.navigate_next_outlined,
-                    btnColor: AppColors.primaryColor,
-                    btnTextColor: AppColors.secondaryColor,
-                    btnIconColor: AppColors.secondaryColor,
-                  ),
-                )
+              ? userEmailDetailsProvider.isLoading
+                  ? LoadingAnimationWidget.discreteCircle(
+                      color: AppColors.primaryColor,
+                      size: size.width * 0.06,
+                    )
+                  : Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.zero,
+                        color: AppColors.secondaryColor,
+                      ),
+                      child: CustomIconBtn(
+                        btnHeight: size.height * 0.06,
+                        btnWidth: size.width,
+                        btnText: "All Set, Let's Go!",
+                        btnBorderRadius: 4,
+                        btnOnTap: () {
+                          /// moving to the next screen
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const EmailNickNameScreen();
+                          }));
+                        },
+                        btnIcon: Icons.navigate_next_outlined,
+                        btnColor: AppColors.primaryColor,
+                        btnTextColor: AppColors.secondaryColor,
+                        btnIconColor: AppColors.secondaryColor,
+                      ),
+                    )
               : const SizedBox(),
           body: Container(
             margin: const EdgeInsets.only(
@@ -199,7 +204,7 @@ class _EmailAvatarScreenState extends State<EmailAvatarScreen> {
                                             child: LoadingAnimationWidget
                                                 .threeArchedCircle(
                                               color: AppColors.primaryColor,
-                                              size: size.width * 0.04,
+                                              size: size.width * 0.06,
                                             ),
                                           ),
                                           errorWidget: (context, url, error) =>
