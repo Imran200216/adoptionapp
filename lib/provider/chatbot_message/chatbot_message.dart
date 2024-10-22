@@ -26,8 +26,9 @@ class Messages extends StatelessWidget {
           text: '$message\n$date',
           color: isUser
               ? (isSent
-                  ? AppColors.primaryColor
-                  : Colors.grey[400]!) // Sent: primary color, Not sent: grey
+                  ? Colors.grey[400]!
+                  : AppColors
+                      .primaryColor) // Sent: primary color, Not sent: grey
               : const Color(0xFFD6E7FE),
           isSender: isUser,
           textStyle: TextStyle(

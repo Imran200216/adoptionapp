@@ -28,20 +28,35 @@ class ChatRoomProvider with ChangeNotifier {
       users.sort(); // Ensure roomId is always the same for the same pair
       String chatRoomId = users.join('_');
 
-      // Check if the room exists in Fire store
+      // Check if the room exists in Firestore
       DocumentSnapshot roomSnapshot = await FirebaseFirestore.instance
           .collection('chatRooms')
           .doc(chatRoomId)
           .get();
 
       if (!roomSnapshot.exists) {
-        // If room does not exist, create a new chat room
+        // If room does not exist, fetch user avatar URLs
+        String? userUid1AvatarUrl = await getUserAvatarUrl(userUid1);
+        String? userUid2AvatarUrl = await getUserAvatarUrl(userUid2);
+
+        // If needed, you can set default URLs if the avatar URLs are null
+        // Set a default if null
+        userUid1AvatarUrl ??=
+            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
+        // Set a default if null
+        userUid2AvatarUrl ??=
+            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
+
+
+        // Create a new chat room with user avatar URLs
         await FirebaseFirestore.instance
             .collection('chatRooms')
             .doc(chatRoomId)
             .set({
           'roomId': chatRoomId,
           'users': users,
+          'userUid1AvatarUrl': userUid1AvatarUrl,
+          'userUid2AvatarUrl': userUid2AvatarUrl,
           'createdAt': Timestamp.now(),
         });
 
@@ -68,7 +83,7 @@ class ChatRoomProvider with ChangeNotifier {
     return users.join('_'); // Always return a valid string
   }
 
-  /// chat functionalities
+  /// Chat functionalities
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -111,7 +126,7 @@ class ChatRoomProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// fetching the user avatars from guest and email
+  /// Fetching the user avatars from guest and email
   Future<String?> getUserAvatarUrl(String uid) async {
     try {
       // Check in the 'userByEmail' collection first
@@ -134,10 +149,9 @@ class ChatRoomProvider with ChangeNotifier {
     return null; // Return null if not found
   }
 
-  // Define a getter for chatRooms that returns a stream of chat rooms from Firestore
+  // Define a getter for chatRooms that returns a stream of chat rooms from Fire store
   // Fetch chat rooms from Firestore
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatRooms() {
     return _firestore.collection('chatRooms').snapshots();
   }
-
 }

@@ -7,6 +7,7 @@ import 'package:adoptionapp/screens/bottom_nav.dart';
 import 'package:adoptionapp/screens/chat_bot/chat_bot_intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,8 +92,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image.asset(
-                                    "assets/images/jpg/chat-bot-img.jpg",
+                                  Lottie.asset(
+                                    "assets/lotties/chatbot.json",
                                     fit: BoxFit.cover,
                                     height: 200,
                                     width: 200,

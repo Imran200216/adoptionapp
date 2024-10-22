@@ -313,7 +313,7 @@ class AddPetContent extends StatelessWidget {
                             height: size.height * 0.02,
                           ),
 
-                          /// pet age
+                          /// pet age drop down text field
                           CustomDropdown<int>(
                             items: List.generate(50, (index) => index + 1),
                             selectedItem: addPetToFirebase.selectedPetAge,
@@ -330,7 +330,7 @@ class AddPetContent extends StatelessWidget {
                             height: size.height * 0.02,
                           ),
 
-                          /// pet weight
+                          /// pet weight check box
                           AddTextField(
                             textEditingController:
                                 addPetToFirebase.petWeightController,
@@ -343,7 +343,7 @@ class AddPetContent extends StatelessWidget {
                             height: size.height * 0.02,
                           ),
 
-                          /// pet gender
+                          /// pet gender check box
                           Container(
                             height: size.height * 0.14,
                             width: size.width,
@@ -367,7 +367,7 @@ class AddPetContent extends StatelessWidget {
                             height: size.height * 0.02,
                           ),
 
-                          /// pet vaccinated status
+                          /// pet vaccinated status check box
                           Container(
                             height: size.height * 0.14,
                             width: size.width,

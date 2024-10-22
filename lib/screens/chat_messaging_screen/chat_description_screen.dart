@@ -1,5 +1,7 @@
+import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/user_chat_provider/chat_room_provider.dart';
 import 'package:adoptionapp/widgets/custom_chat_bubbles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +30,51 @@ class ChatDescriptionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     final TextEditingController _messageController = TextEditingController();
     final chatProvider = Provider.of<ChatRoomProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Room: $roomId'),
+        centerTitle: false,
+        backgroundColor: AppColors.primaryColor,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: size.height * 0.026,
+            color: AppColors.secondaryColor,
+          ),
+        ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          // Use min to take only necessary space
+          children: [
+            ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: userUid2AvatarUrl,
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+            ),
+            const SizedBox(width: 6), // Adjust spacing here if needed
+            Text(
+              petOwnerName,
+              style: TextStyle(
+                fontSize: size.width * 0.06,
+                fontWeight: FontWeight.w700,
+                color: AppColors.secondaryColor,
+                fontFamily: "NunitoSans",
+              ),
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [

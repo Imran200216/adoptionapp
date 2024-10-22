@@ -209,6 +209,7 @@ class HomeScreen extends StatelessWidget {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: 10,
                               itemBuilder: (context, index) {
+                                /// shimmer card
                                 return Shimmer.fromColors(
                                   baseColor: Colors.grey[300]!,
                                   highlightColor: Colors.grey[100]!,

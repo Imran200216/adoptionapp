@@ -412,6 +412,8 @@ class PetDescriptionScreen extends StatelessWidget {
                                       SizedBox(
                                         width: size.width * 0.04,
                                       ),
+
+                                      /// creating the chat room
                                       CircularIconBtn(
                                         onTap: () async {
                                           final currentUser =
@@ -479,11 +481,12 @@ class PetDescriptionScreen extends StatelessWidget {
                                                       // Pet owner's name
                                                       userUid1AvatarUrl:
                                                           userUid1AvatarUrl ??
-                                                              '',
+                                                              "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
                                                       // Avatar URL for current user
                                                       userUid2AvatarUrl:
                                                           userUid2AvatarUrl ??
-                                                              '', // Avatar URL for other user
+                                                              "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
+                                                      // Avatar URL for other user
                                                     );
                                                   },
                                                 ),

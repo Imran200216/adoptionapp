@@ -306,9 +306,10 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
         petWeightController.text.isNotEmpty ||
         petOwnerNameController.text.isNotEmpty ||
         petDescriptionController.text.isNotEmpty ||
-        petImages.isNotEmpty ||
-        selectedPetType.isNotEmpty ||
-        selectedGender.isNotEmpty ||
-        completePhoneNumber.isNotEmpty;
+        petImages.isNotEmpty;
+    // ||
+    // selectedPetType.isNotEmpty ||
+    // selectedGender.isNotEmpty ||
+    // completePhoneNumber.isNotEmpty;
   }
 }
