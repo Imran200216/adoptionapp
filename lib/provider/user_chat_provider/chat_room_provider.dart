@@ -28,7 +28,7 @@ class ChatRoomProvider with ChangeNotifier {
       users.sort(); // Ensure roomId is always the same for the same pair
       String chatRoomId = users.join('_');
 
-      // Check if the room exists in Firestore
+      // Check if the room exists in Fire store
       DocumentSnapshot roomSnapshot = await FirebaseFirestore.instance
           .collection('chatRooms')
           .doc(chatRoomId)
@@ -46,7 +46,6 @@ class ChatRoomProvider with ChangeNotifier {
         // Set a default if null
         userUid2AvatarUrl ??=
             "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
-
 
         // Create a new chat room with user avatar URLs
         await FirebaseFirestore.instance
@@ -91,7 +90,7 @@ class ChatRoomProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> get messages => _messages;
 
-  // Fetch messages from Firestore
+  // Fetch messages from Fire store
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String roomId) {
     return _firestore
         .collection('chatRooms')
@@ -131,13 +130,13 @@ class ChatRoomProvider with ChangeNotifier {
     try {
       // Check in the 'userByEmail' collection first
       DocumentSnapshot userDoc =
-          await _firestore.collection('userByEmail').doc(uid).get();
+          await _firestore.collection('userByEmailAuth').doc(uid).get();
 
       if (userDoc.exists) {
         return userDoc['avatarPhotoURL']; // Return avatar URL if found
       } else {
         // If not found in 'userByEmail', check in 'userByGuest'
-        userDoc = await _firestore.collection('userByGuest').doc(uid).get();
+        userDoc = await _firestore.collection('userByGuestAuth').doc(uid).get();
 
         if (userDoc.exists) {
           return userDoc['avatarPhotoURL']; // Return avatar URL if found
@@ -150,7 +149,7 @@ class ChatRoomProvider with ChangeNotifier {
   }
 
   // Define a getter for chatRooms that returns a stream of chat rooms from Fire store
-  // Fetch chat rooms from Firestore
+  // Fetch chat rooms from Fires tore
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatRooms() {
     return _firestore.collection('chatRooms').snapshots();
   }

@@ -46,106 +46,66 @@ class ChatScreen extends StatelessWidget {
                 SizedBox(height: 16),
 
                 // List of Chat Rooms
-                Consumer<ChatRoomProvider>(
-                  builder: (context, chatRoomProvider, child) {
-                    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: chatRoomProvider.getChatRooms(),
-                      // Stream from Fire store
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                              child:
-                                  CircularProgressIndicator()); // Show loader
-                        }
+            Consumer<ChatRoomProvider>(
+              builder: (context, chatRoomProvider, child) {
+                return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: chatRoomProvider.getChatRooms(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Lottie.asset(
-                                  "assets/lotties/empty-animation.json",
-                                  height: size.height * 0.35,
-                                  fit: BoxFit.cover,
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Lottie.asset(
+                            "assets/lotties/empty-animation.json",
+                            height: size.height * 0.35,
+                          ),
+                          Text('No chats available'),
+                        ],
+                      );
+                    }
+
+                    List<QueryDocumentSnapshot<Map<String, dynamic>>> chatRooms = snapshot.data!.docs;
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: chatRooms.length,
+                      itemBuilder: (context, index) {
+                        final chatRoomData = chatRooms[index].data();
+                        final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+
+                        return CustomChatListContainer(
+                          avatarUrl: chatRoomData['userUid2AvatarUrl'] as String? ?? '',
+                          personName: chatRoomData['userName'] as String? ?? 'No Name',
+                          recentMessage: chatRoomData['recentMessage'] as String? ?? 'No messages yet',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatDescriptionScreen(
+                                  roomId: chatRoomData['roomId'],
+                                  userUid1: currentUserUid,
+                                  userUid2: chatRoomData['users'][1],
+                                  userUid1Name: FirebaseAuth.instance.currentUser?.displayName ?? 'Your Name',
+                                  petOwnerName: chatRoomData['userName'],
+                                  userUid1AvatarUrl:  chatRoomData['userUid1AvatarUrl'],
+                                  userUid2AvatarUrl: chatRoomData['userUid2AvatarUrl'],
                                 ),
-                                Text(
-                                  'No chat available',
-                                  style: TextStyle(
-                                    fontSize: size.width * 0.052,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.subTitleColor,
-                                    fontFamily: "NunitoSans",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        // Access the chat rooms data
-                        List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                            chatRooms = snapshot.data!.docs;
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: chatRooms.length,
-                          itemBuilder: (context, index) {
-                            final chatRoomData = chatRooms[index].data();
-                            final currentUserUid =
-                                FirebaseAuth.instance.currentUser!.uid;
-
-                            return CustomChatListContainer(
-                              onTap: () {
-                                // Navigate to ChatDescriptionScreen when tapped
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatDescriptionScreen(
-                                      roomId: chatRoomData['roomId'] as String,
-                                      // Ensure correct type
-                                      userUid1: currentUserUid,
-                                      userUid2:
-                                          chatRoomData['userUid2'] as String,
-                                      // Ensure correct type
-                                      userUid1Name: FirebaseAuth.instance
-                                              .currentUser!.displayName ??
-                                          'Your Name',
-                                      petOwnerName:
-                                          chatRoomData['userName'] as String,
-                                      // Ensure correct type
-                                      userUid1AvatarUrl: (chatRoomProvider
-                                              .getUserAvatarUrl(currentUserUid))
-                                          as String,
-
-                                      userUid2AvatarUrl:
-                                          chatRoomData['userAvatarUrl']
-                                              as String, // Ensure correct type
-                                    ),
-                                  ),
-                                );
-                              },
-                              avatarUrl:
-                                  chatRoomData['userAvatarUrl'] as String? ??
-                                      "No avatar",
-                              // Correct casting
-                              personName: chatRoomData['userName'] as String? ??
-                                  "No username",
-                              // Correct casting
-                              recentMessage:
-                                  chatRoomData['recentMessage'] as String? ??
-                                      'No messages yet',
-                              recentMessageIndication:
-                                  0, // Add custom logic if needed
+                              ),
                             );
-                          },
+                          }, recentMessageIndication: 1,
                         );
                       },
                     );
                   },
-                ),
-              ],
+                );
+              },
+            ),
+
+            ],
             ),
           ),
         ),

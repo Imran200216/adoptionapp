@@ -1,10 +1,12 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/provider/user_chat_provider/chat_room_provider.dart';
-import 'package:adoptionapp/widgets/custom_chat_bubbles.dart';
+import 'package:adoptionapp/provider/user_chat_provider/chat_text_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_bubbles/bubbles/bubble_special_one.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ChatDescriptionScreen extends StatelessWidget {
@@ -16,7 +18,6 @@ class ChatDescriptionScreen extends StatelessWidget {
   final String userUid1Name;
   final String petOwnerName;
 
-  // Constructor with parameters for roomId, user UIDs, and names
   const ChatDescriptionScreen({
     super.key,
     required this.roomId,
@@ -30,10 +31,15 @@ class ChatDescriptionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// media query
     final size = MediaQuery.of(context).size;
 
-    final TextEditingController _messageController = TextEditingController();
+    /// chat room provider
     final chatProvider = Provider.of<ChatRoomProvider>(context);
+
+    /// chat text controller provider
+    final chatTextControllerProvider =
+        Provider.of<ChatTextControllerProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +57,6 @@ class ChatDescriptionScreen extends StatelessWidget {
         ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          // Use min to take only necessary space
           children: [
             ClipOval(
               child: CachedNetworkImage(
@@ -63,7 +68,7 @@ class ChatDescriptionScreen extends StatelessWidget {
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
             ),
-            const SizedBox(width: 6), // Adjust spacing here if needed
+            const SizedBox(width: 6),
             Text(
               petOwnerName,
               style: TextStyle(
@@ -86,7 +91,6 @@ class ChatDescriptionScreen extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                // Update messages in provider after the build phase is complete
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   chatProvider.updateMessages(snapshot.data!);
                 });
@@ -99,9 +103,47 @@ class ChatDescriptionScreen extends StatelessWidget {
                     final isSender = messageData['senderUid'] ==
                         FirebaseAuth.instance.currentUser!.uid;
 
-                    return ChatBubble(
-                      message: messageData['message'],
-                      isSender: isSender,
+                    // Retrieve timestamp
+                    final timestamp = messageData['timestamp'] as Timestamp;
+                    final messageTime = DateFormat('h:mm a')
+                        .format(timestamp.toDate()); // Format time
+
+                    // Check if the message is from the chatbot
+                    final isChatbot = messageData['senderUid'] == 'chatbot';
+
+                    return Column(
+                      crossAxisAlignment: isSender
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        BubbleSpecialOne(
+                          text: messageData['message'],
+                          isSender: isSender,
+                          color: isChatbot
+                              ? Colors.purple.shade100
+                              : AppColors.primaryColor,
+                          textStyle: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.secondaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "NunitoSans",
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 8.0,
+                            right: 8.0,
+                            bottom: 10.0,
+                          ),
+                          child: Text(
+                            messageTime,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   },
                 );
@@ -114,9 +156,21 @@ class ChatDescriptionScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _messageController,
+                    style: TextStyle(
+                      fontFamily: "NunitoSans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.blackColor,
+                    ),
+                    controller: chatTextControllerProvider.messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
+                      hintStyle: TextStyle(
+                        fontFamily: "NunitoSans",
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blueGrey.shade700,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30.0),
                         borderSide: BorderSide.none,
@@ -127,10 +181,13 @@ class ChatDescriptionScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () {
-                    chatProvider.sendMessage(roomId, _messageController.text);
-                    _messageController.clear(); // Clear the input field
+                    chatProvider.sendMessage(
+                      roomId,
+                      chatTextControllerProvider.message,
+                    );
+                    chatTextControllerProvider.clearMessage(); // Clear input
                   },
                 ),
               ],
