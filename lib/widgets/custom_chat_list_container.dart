@@ -56,7 +56,7 @@ class CustomChatListContainer extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: imageProvider,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),

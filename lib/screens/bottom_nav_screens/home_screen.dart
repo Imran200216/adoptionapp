@@ -70,294 +70,159 @@ class HomeScreen extends StatelessWidget {
       }
     }
 
-    return SafeArea(
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppColors.primaryColor,
-          onPressed: () {
-            // Check if the intro has been seen before navigating
-            checkIntroStatus(context);
-          },
-          child: Center(
-            child: SvgPicture.asset(
-              "assets/images/svg/chatbot-icon.svg",
-              height: size.height * 0.036,
-              color: AppColors.secondaryColor,
-              fit: BoxFit.cover,
-            ),
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primaryColor,
+        onPressed: () {
+          // Check if the intro has been seen before navigating
+          checkIntroStatus(context);
+        },
+        child: Center(
+          child: SvgPicture.asset(
+            "assets/images/svg/chatbot-icon.svg",
+            height: size.height * 0.036,
+            color: AppColors.secondaryColor,
+            fit: BoxFit.cover,
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 30,
-                  bottom: 30,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AutoSizeText(
-                          textAlign: TextAlign.start,
-                          'ReHome',
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: size.width * 0.05,
-                            color: const Color(0xFF4D4C4C),
-                            fontFamily: "NunitoSans",
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.notifications,
-                            color: AppColors.subTitleColor,
-                            size: size.width * 0.06,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-
-                    /// search field
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF2F3F2),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: TextField(
-                        onChanged: (value) {
-                          /// search functionality
-                          searchProvider.setSearchQuery(value);
-                        },
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 30,
+                bottom: 30,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AutoSizeText(
+                        textAlign: TextAlign.start,
+                        'ReHome',
+                        maxLines: 2,
                         style: TextStyle(
-                          fontSize: size.width * 0.04,
-                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w800,
+                          fontSize: size.width * 0.05,
+                          color: const Color(0xFF4D4C4C),
                           fontFamily: "NunitoSans",
-                          fontWeight: FontWeight.w600,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: "Type your favorite breed...",
-                          hintStyle: TextStyle(
-                            color: AppColors.subTitleColor,
-                            fontFamily: "NunitoSans",
-                            fontSize: size.width * 0.04,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: AppColors.subTitleColor,
-                            size: size.width * 0.06,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                          ),
                         ),
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.notifications,
+                          color: AppColors.subTitleColor,
+                          size: size.width * 0.06,
+                        ),
+                      ),
+                    ],
+                  ),
 
-                    /// chips
-                    PetCategoryChips(
-                      onTap: (String category) {
-                        petProvider.setCategory(category);
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+
+                  /// search field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2F3F2),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: TextField(
+                      onChanged: (value) {
+                        /// search functionality
+                        searchProvider.setSearchQuery(value);
                       },
-                      petCategories: petCategories,
-                      selectedCategory: petProvider.selectedCategory,
-                    ),
-                    AutoSizeText(
-                      textAlign: TextAlign.start,
-                      'New Friends for adoption!',
-                      maxLines: 2,
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: size.width * 0.052,
-                        color: const Color(0xFF4D4C4C),
+                        fontSize: size.width * 0.04,
+                        color: AppColors.blackColor,
                         fontFamily: "NunitoSans",
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: "Type your favorite breed...",
+                        hintStyle: TextStyle(
+                          color: AppColors.subTitleColor,
+                          fontFamily: "NunitoSans",
+                          fontSize: size.width * 0.04,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: AppColors.subTitleColor,
+                          size: size.width * 0.06,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
                       ),
                     ),
+                  ),
 
-                    SizedBox(
-                      height: size.height * 0.04,
+                  /// chips
+                  PetCategoryChips(
+                    onTap: (String category) {
+                      petProvider.setCategory(category);
+                    },
+                    petCategories: petCategories,
+                    selectedCategory: petProvider.selectedCategory,
+                  ),
+                  AutoSizeText(
+                    textAlign: TextAlign.start,
+                    'New Friends for adoption!',
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: size.width * 0.052,
+                      color: const Color(0xFF4D4C4C),
+                      fontFamily: "NunitoSans",
                     ),
+                  ),
 
-                    if (!internetCheckerProvider.isNetworkConnected)
-                      const CustomInternetChecker()
-                    else
+                  SizedBox(
+                    height: size.height * 0.04,
+                  ),
 
-                      /// Fetch and display pets from database based on selected category
-                      StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('pets')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          // Check if the snapshot has data
-                          if (!snapshot.hasData) {
-                            return ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: 10,
-                              itemBuilder: (context, index) {
-                                /// shimmer card
-                                return Shimmer.fromColors(
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: Container(
-                                    height: size.height * 0.15,
-                                    // Example height for the shimmer
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.white,
-                                    ),
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                  ),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return SizedBox(
-                                  height: size.height * 0.02,
-                                );
-                              },
-                            );
-                          }
+                  if (!internetCheckerProvider.isNetworkConnected)
+                    const CustomInternetChecker()
+                  else
 
-                          /// Get all pets initially
-                          final allPets = snapshot.data!.docs;
-
-                          /// Filter pets based on selected category and search query
-                          final filteredPets = allPets.where((pet) {
-                            final petCategory = pet['petCategory'] ??
-                                'Others'; // Replace with your actual field name
-                            final petName = pet['petName']?.toLowerCase() ?? '';
-                            final petBreed =
-                                pet['petBreed']?.toLowerCase() ?? '';
-                            final searchQuery =
-                                searchProvider.searchQuery.toLowerCase();
-
-                            final matchesCategory =
-                                petProvider.selectedCategory == 'All' ||
-                                    petCategory == petProvider.selectedCategory;
-
-                            final matchesSearchQuery = searchQuery.isEmpty ||
-                                petName.contains(searchQuery) ||
-                                petBreed.contains(searchQuery);
-
-                            return matchesCategory && matchesSearchQuery;
-                          }).toList();
-
-                          /// If no pets match the selected category or search query, show the empty animation
-                          if (filteredPets.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Lottie.asset(
-                                    'assets/lotties/empty-animation.json',
-                                    fit: BoxFit.cover,
-                                  ),
-                                  AutoSizeText(
-                                    textAlign: TextAlign.start,
-                                    'No pets found in this category or search query!',
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: size.width * 0.040,
-                                      color: const Color(0xFF4D4C4C),
-                                      fontFamily: "NunitoSans",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          /// If pets are found, display them
+                    /// Fetch and display pets from database based on selected category
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('pets')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        // Check if the snapshot has data
+                        if (!snapshot.hasData) {
                           return ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: filteredPets.length,
+                            itemCount: 10,
                             itemBuilder: (context, index) {
-                              /// Get the pet data as a DocumentSnapshot
-                              var petSnapshot = filteredPets[index];
-
-                              /// Ensure that petSnapshot is of type DocumentSnapshot
-                              ///   Extract the data as a Map<String, dynamic>
-                              var petData =
-                                  petSnapshot.data() as Map<String, dynamic>?;
-
-                              // Check if petData is not null before creating an instance of PetModels
-                              if (petData != null) {
-                                // Create an instance of PetModels from the pet data
-                                PetModels pet =
-                                    PetModels.fromFirestore(petData);
-
-                                return OpenContainer(
-                                  transitionType: ContainerTransitionType.fade,
-                                  transitionDuration:
-                                      const Duration(milliseconds: 800),
-                                  openBuilder:
-                                      (BuildContext context, VoidCallback _) {
-                                    // Pass the pet object to PetDescriptionScreen
-                                    return PetDescriptionScreen(pet: pet);
-                                  },
-                                  closedShape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.0),
+                              /// shimmer card
+                              return Shimmer.fromColors(
+                                baseColor: Colors.grey[300]!,
+                                highlightColor: Colors.grey[100]!,
+                                child: Container(
+                                  height: size.height * 0.15,
+                                  // Example height for the shimmer
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.white,
                                   ),
-                                  closedElevation: 0.0,
-                                  closedBuilder: (BuildContext context,
-                                      VoidCallback openContainer) {
-                                    return PetCard(
-                                      onFavoriteTap: () {
-                                        /// add to favorite using provider
-                                        if (favoriteProvider
-                                            .isFavorite(pet.petId)) {
-                                          // If the pet is already a favorite, remove it
-                                          favoriteProvider.removeFavoritePet(
-                                              pet.petId, context);
-                                        } else {
-                                          // If the pet is not a favorite, add it
-                                          favoriteProvider.addFavoritePet(
-                                              pet.petId, context);
-                                        }
-                                      },
-                                      favoriteIcon: Icon(
-                                        favoriteProvider.isFavorite(pet.petId)
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        color: favoriteProvider
-                                                .isFavorite(pet.petId)
-                                            ? AppColors.failureToastColor
-                                            : AppColors.subTitleColor,
-                                      ),
-                                      petId: pet.petId,
-                                      imageUrl: pet.petImages.isNotEmpty
-                                          ? pet.petImages[0]
-                                          : "Pet Image",
-                                      petName: pet.petName,
-                                      petBreed: pet.petBreed,
-                                      petGender: pet.petGender,
-                                      petAge: pet.petAge,
-                                      petOwnerName: pet.petOwnerName,
-                                    );
-                                  },
-                                );
-                              } else {
-                                // Return an empty container if petData is null
-                                return Container();
-                              }
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 8.0),
+                                ),
+                              );
                             },
                             separatorBuilder:
                                 (BuildContext context, int index) {
@@ -366,13 +231,146 @@ class HomeScreen extends StatelessWidget {
                               );
                             },
                           );
-                        },
-                      ),
-                  ],
-                ),
+                        }
+
+                        /// Get all pets initially
+                        final allPets = snapshot.data!.docs;
+
+                        /// Filter pets based on selected category and search query
+                        final filteredPets = allPets.where((pet) {
+                          final petCategory = pet['petCategory'] ??
+                              'Others'; // Replace with your actual field name
+                          final petName = pet['petName']?.toLowerCase() ?? '';
+                          final petBreed =
+                              pet['petBreed']?.toLowerCase() ?? '';
+                          final searchQuery =
+                              searchProvider.searchQuery.toLowerCase();
+
+                          final matchesCategory =
+                              petProvider.selectedCategory == 'All' ||
+                                  petCategory == petProvider.selectedCategory;
+
+                          final matchesSearchQuery = searchQuery.isEmpty ||
+                              petName.contains(searchQuery) ||
+                              petBreed.contains(searchQuery);
+
+                          return matchesCategory && matchesSearchQuery;
+                        }).toList();
+
+                        /// If no pets match the selected category or search query, show the empty animation
+                        if (filteredPets.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.asset(
+                                  'assets/lotties/empty-animation.json',
+                                  fit: BoxFit.cover,
+                                ),
+                                AutoSizeText(
+                                  textAlign: TextAlign.start,
+                                  'No pets found in this category or search query!',
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: size.width * 0.040,
+                                    color: const Color(0xFF4D4C4C),
+                                    fontFamily: "NunitoSans",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        /// If pets are found, display them
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredPets.length,
+                          itemBuilder: (context, index) {
+                            /// Get the pet data as a DocumentSnapshot
+                            var petSnapshot = filteredPets[index];
+
+                            /// Ensure that petSnapshot is of type DocumentSnapshot
+                            ///   Extract the data as a Map<String, dynamic>
+                            var petData =
+                                petSnapshot.data() as Map<String, dynamic>?;
+
+                            // Check if petData is not null before creating an instance of PetModels
+                            if (petData != null) {
+                              // Create an instance of PetModels from the pet data
+                              PetModels pet =
+                                  PetModels.fromFirestore(petData);
+
+                              return OpenContainer(
+                                transitionType: ContainerTransitionType.fade,
+                                transitionDuration:
+                                    const Duration(milliseconds: 800),
+                                openBuilder:
+                                    (BuildContext context, VoidCallback _) {
+                                  // Pass the pet object to PetDescriptionScreen
+                                  return PetDescriptionScreen(pet: pet);
+                                },
+                                closedShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                closedElevation: 0.0,
+                                closedBuilder: (BuildContext context,
+                                    VoidCallback openContainer) {
+                                  return PetCard(
+                                    onFavoriteTap: () {
+                                      /// add to favorite using provider
+                                      if (favoriteProvider
+                                          .isFavorite(pet.petId)) {
+                                        // If the pet is already a favorite, remove it
+                                        favoriteProvider.removeFavoritePet(
+                                            pet.petId, context);
+                                      } else {
+                                        // If the pet is not a favorite, add it
+                                        favoriteProvider.addFavoritePet(
+                                            pet.petId, context);
+                                      }
+                                    },
+                                    favoriteIcon: Icon(
+                                      favoriteProvider.isFavorite(pet.petId)
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: favoriteProvider
+                                              .isFavorite(pet.petId)
+                                          ? AppColors.failureToastColor
+                                          : AppColors.subTitleColor,
+                                    ),
+                                    petId: pet.petId,
+                                    imageUrl: pet.petImages.isNotEmpty
+                                        ? pet.petImages[0]
+                                        : "Pet Image",
+                                    petName: pet.petName,
+                                    petBreed: pet.petBreed,
+                                    petGender: pet.petGender,
+                                    petAge: pet.petAge,
+                                    petOwnerName: pet.petOwnerName,
+                                  );
+                                },
+                              );
+                            } else {
+                              // Return an empty container if petData is null
+                              return Container();
+                            }
+                          },
+                          separatorBuilder:
+                              (BuildContext context, int index) {
+                            return SizedBox(
+                              height: size.height * 0.02,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

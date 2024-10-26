@@ -5,14 +5,37 @@ import 'package:adoptionapp/widgets/toast_helper.dart';
 
 class ChatRoomProvider with ChangeNotifier {
   String? _roomId;
+  String? _userUid1AvatarUrl;
+  String? _userUid2AvatarUrl;
+  String? _userUid1Name;
+  String? _userUid2Name;
+
+
+  // Loading state
+  bool _isLoading = false;
+
+  // Getter for the loading state
+  bool get isLoading => _isLoading;
 
   // Getter for the roomId
   String? get roomId => _roomId;
+
+  String? get userUid1AvatarUrl => _userUid1AvatarUrl;
+
+  String? get userUid2AvatarUrl => _userUid2AvatarUrl;
+
+  String? get userUid1Name => _userUid1Name;
+
+  String? get userUid2Name => _userUid2Name;
 
   // Create or get a chat room between two users
   Future<void> createChatRoom(
       String userUid1, String userUid2, BuildContext context) async {
     try {
+      // Set loading state to true
+      _isLoading = true;
+      notifyListeners();
+
       // Check if user UIDs are equal
       if (userUid1 == userUid2) {
         // Show a toast message
@@ -20,15 +43,21 @@ class ChatRoomProvider with ChangeNotifier {
           context: context,
           message: "You cannot chat with yourself.",
         );
+        _isLoading = false; // Reset loading state
+        notifyListeners();
         return; // Exit the function
       }
+
+      // Fetch nicknames for both users
+      String? userUid1Name = await getUserNickName(userUid1);
+      String? userUid2Name = await getUserNickName(userUid2);
 
       // Generate a unique chat room ID
       List<String> users = [userUid1, userUid2];
       users.sort(); // Ensure roomId is always the same for the same pair
       String chatRoomId = users.join('_');
 
-      // Check if the room exists in Fire store
+      // Check if the room exists in Firestore
       DocumentSnapshot roomSnapshot = await FirebaseFirestore.instance
           .collection('chatRooms')
           .doc(chatRoomId)
@@ -40,12 +69,10 @@ class ChatRoomProvider with ChangeNotifier {
         String? userUid2AvatarUrl = await getUserAvatarUrl(userUid2);
 
         // If needed, you can set default URLs if the avatar URLs are null
-        // Set a default if null
         userUid1AvatarUrl ??=
-            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
-        // Set a default if null
+            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzUyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
         userUid2AvatarUrl ??=
-            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
+            "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzUyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw";
 
         // Create a new chat room with user avatar URLs
         await FirebaseFirestore.instance
@@ -56,6 +83,8 @@ class ChatRoomProvider with ChangeNotifier {
           'users': users,
           'userUid1AvatarUrl': userUid1AvatarUrl,
           'userUid2AvatarUrl': userUid2AvatarUrl,
+          'userUid1Name': userUid1Name,
+          'userUid2Name': userUid2Name,
           'createdAt': Timestamp.now(),
         });
 
@@ -66,12 +95,20 @@ class ChatRoomProvider with ChangeNotifier {
         );
       }
 
-      // Store the roomId
+      // Store the roomId and user details
       _roomId = chatRoomId;
+      _userUid1AvatarUrl = userUid1AvatarUrl;
+      _userUid2AvatarUrl = userUid2AvatarUrl;
+      _userUid1Name = userUid1Name;
+      _userUid2Name = userUid2Name;
 
       notifyListeners();
     } catch (e) {
       print("Error creating chat room: $e");
+    } finally{
+      // Reset loading state
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -90,7 +127,7 @@ class ChatRoomProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> get messages => _messages;
 
-  // Fetch messages from Fire store
+  // Fetch messages from Firestore
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String roomId) {
     return _firestore
         .collection('chatRooms')
@@ -148,9 +185,50 @@ class ChatRoomProvider with ChangeNotifier {
     return null; // Return null if not found
   }
 
-  // Define a getter for chatRooms that returns a stream of chat rooms from Fire store
-  // Fetch chat rooms from Fires tore
+  // Define a getter for chatRooms that returns a stream of chat rooms from Firestore
+  // Fetch chat rooms from Firestore
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatRooms() {
     return _firestore.collection('chatRooms').snapshots();
   }
+
+  // Fetch the nickName from user collections
+  Future<String?> getUserNickName(String uid) async {
+    try {
+      // Check in the 'userByEmail' collection first
+      DocumentSnapshot userDoc =
+          await _firestore.collection('userByEmailAuth').doc(uid).get();
+
+      if (userDoc.exists) {
+        return userDoc['nickName']; // Return nickName if found
+      } else {
+        // If not found in 'userByEmail', check in 'userByGuest'
+        userDoc = await _firestore.collection('userByGuestAuth').doc(uid).get();
+
+        if (userDoc.exists) {
+          return userDoc['nickName']; // Return nickName if found
+        }
+      }
+    } catch (e) {
+      print("Error fetching nickName: $e");
+    }
+    return null; // Return null if not found
+  }
+
+  Future<Map<String, dynamic>?> getLastMessage(String roomId) async {
+    // Replace with your logic to fetch the last message from your database
+    // For example, fetching from Firestore
+    final snapshot = await FirebaseFirestore.instance
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      return snapshot.docs.first.data();
+    }
+    return null; // Return null if there are no messages
+  }
+
 }

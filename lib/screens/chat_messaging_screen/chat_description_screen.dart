@@ -81,119 +81,130 @@ class ChatDescriptionScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: chatProvider.getMessages(roomId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
+      body: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(0),
+          image: DecorationImage(
+            image: AssetImage(
+              "assets/images/jpg/chatbotbg-img.jpeg",
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: chatProvider.getMessages(roomId),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  chatProvider.updateMessages(snapshot.data!);
-                });
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    chatProvider.updateMessages(snapshot.data!);
+                  });
 
-                return ListView.builder(
-                  reverse: true,
-                  itemCount: chatProvider.messages.length,
-                  itemBuilder: (context, index) {
-                    final messageData = chatProvider.messages[index];
-                    final isSender = messageData['senderUid'] ==
-                        FirebaseAuth.instance.currentUser!.uid;
+                  return ListView.builder(
+                    reverse: true,
+                    itemCount: chatProvider.messages.length,
+                    itemBuilder: (context, index) {
+                      final messageData = chatProvider.messages[index];
+                      final isSender = messageData['senderUid'] ==
+                          FirebaseAuth.instance.currentUser!.uid;
 
-                    // Retrieve timestamp
-                    final timestamp = messageData['timestamp'] as Timestamp;
-                    final messageTime = DateFormat('h:mm a')
-                        .format(timestamp.toDate()); // Format time
+                      // Retrieve timestamp
+                      final timestamp = messageData['timestamp'];
+                      final messageTime = DateFormat('h:mm a')
+                          .format(timestamp.toDate()); // Format time
 
-                    // Check if the message is from the chatbot
-                    final isChatbot = messageData['senderUid'] == 'chatbot';
+                      // Check if the message is from the chatbot
+                      final isChatbot = messageData['senderUid'] == 'chatbot';
 
-                    return Column(
-                      crossAxisAlignment: isSender
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        BubbleSpecialOne(
-                          text: messageData['message'],
-                          isSender: isSender,
-                          color: isChatbot
-                              ? Colors.purple.shade100
-                              : AppColors.primaryColor,
-                          textStyle: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.secondaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "NunitoSans",
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 8.0,
-                            right: 8.0,
-                            bottom: 10.0,
-                          ),
-                          child: Text(
-                            messageTime,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                      return Column(
+                        crossAxisAlignment: isSender
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          BubbleSpecialOne(
+                            text: messageData['message'],
+                            isSender: isSender,
+                            color: isChatbot
+                                ? Colors.purple.shade100
+                                : AppColors.primaryColor,
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.secondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "NunitoSans",
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 8.0,
+                              right: 8.0,
+                              bottom: 10.0,
+                            ),
+                            child: Text(
+                              messageTime,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(
-                      fontFamily: "NunitoSans",
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.blackColor,
-                    ),
-                    controller: chatTextControllerProvider.messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      style: TextStyle(
                         fontFamily: "NunitoSans",
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.blueGrey.shade700,
+                        color: AppColors.blackColor,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide.none,
+                      controller: chatTextControllerProvider.messageController,
+                      decoration: InputDecoration(
+                        hintText: 'Type a message...',
+                        hintStyle: TextStyle(
+                          fontFamily: "NunitoSans",
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blueGrey.shade700,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[200],
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () {
-                    chatProvider.sendMessage(
-                      roomId,
-                      chatTextControllerProvider.message,
-                    );
-                    chatTextControllerProvider.clearMessage(); // Clear input
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: () {
+                      chatProvider.sendMessage(
+                        roomId,
+                        chatTextControllerProvider.message,
+                      );
+                      chatTextControllerProvider.clearMessage(); // Clear input
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
