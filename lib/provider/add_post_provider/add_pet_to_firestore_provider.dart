@@ -351,4 +351,26 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
+
+  /// Method to fetch all pets from Firestore
+  Future<List<PetModels>> fetchAllPets() async {
+    setLoading(true);
+    List<PetModels> pets = [];
+
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('pets').get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        PetModels pet =
+            PetModels.fromFirestore(doc.data() as Map<String, dynamic>);
+        pets.add(pet);
+      }
+    } catch (e) {
+      debugPrint("Error fetching pets: $e");
+    } finally {
+      setLoading(false);
+    }
+
+    return pets;
+  }
 }
