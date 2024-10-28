@@ -38,6 +38,7 @@ class ChatScreen extends StatelessWidget {
                   Text(
                     "All Chats",
                     style: TextStyle(
+                      fontFamily: "NunitoSans",
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: AppColors.blackColor,
@@ -65,7 +66,15 @@ class ChatScreen extends StatelessWidget {
                               "assets/lotties/empty-animation.json",
                               height: size.height * 0.35,
                             ),
-                            Text('No chats available'),
+                            Text(
+                              'No chats available',
+                              style: TextStyle(
+                                fontFamily: "NunitoSans",
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.subTitleColor,
+                                fontSize: 20,
+                              ),
+                            ),
                           ],
                         );
                       }
