@@ -1,5 +1,6 @@
 import 'package:adoptionapp/helper/debounce_helper.dart';
 import 'package:adoptionapp/helper/toast_helper.dart';
+import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:flutter/material.dart';
 class AddPetFavoriteProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final List<String> _favoritePetIds = [];
-  final DebounceHelper _debounceHelper =
-      DebounceHelper(); // Instantiate the debounce helper
+
+  // debounce helper
+  final DebounceHelper _debounceHelper = DebounceHelper();
 
   List<String> get favoritePetIds => _favoritePetIds;
 
@@ -39,7 +41,8 @@ class AddPetFavoriteProvider extends ChangeNotifier {
     if (_debounceHelper.isDebounced()) return; // Return if debounce is active
 
     _debounceHelper.activateDebounce(
-        duration: const Duration(seconds: 2)); // Activate debounce for 2 seconds
+        duration:
+            const Duration(seconds: 2)); // Activate debounce for 2 seconds
 
     User? user = _auth.currentUser;
     if (user != null && !_favoritePetIds.contains(petId)) {
@@ -66,7 +69,8 @@ class AddPetFavoriteProvider extends ChangeNotifier {
     if (_debounceHelper.isDebounced()) return; // Return if debounce is active
 
     _debounceHelper.activateDebounce(
-        duration: const Duration(seconds: 2)); // Activate debounce for 2 seconds
+        duration:
+            const Duration(seconds: 2)); // Activate debounce for 2 seconds
 
     User? user = _auth.currentUser;
     if (user != null && _favoritePetIds.contains(petId)) {
@@ -99,5 +103,43 @@ class AddPetFavoriteProvider extends ChangeNotifier {
 
   bool isFavorite(String petId) {
     return _favoritePetIds.contains(petId);
+  }
+
+  /// Fetch all favorite pet cards for the current user
+  Future<List<PetModels>> fetchFavoritePetCards() async {
+    User? user = _auth.currentUser;
+    if (user == null) return [];
+
+    try {
+      // Fetch the favorite pet IDs
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('favorites')
+          .where('userUid', isEqualTo: user.uid)
+          .get();
+
+      List<String> favoritePetIds = [];
+      for (var doc in snapshot.docs) {
+        favoritePetIds.add(doc['petId'] as String);
+      }
+
+      // Fetch the pet details for each favorite pet ID
+      List<PetModels> favoritePets = [];
+      for (String petId in favoritePetIds) {
+        DocumentSnapshot<Map<String, dynamic>> petDoc = await FirebaseFirestore
+            .instance
+            .collection('pets')
+            .doc(petId)
+            .get();
+        if (petDoc.exists) {
+          favoritePets.add(PetModels.fromFirestore(petDoc.data()!));
+        }
+      }
+
+      return favoritePets;
+    } catch (e) {
+      debugPrint("Error fetching favorite pets: $e");
+      return [];
+    }
   }
 }
