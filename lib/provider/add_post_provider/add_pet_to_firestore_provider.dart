@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:adoptionapp/helper/debounce_helper.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
 import 'package:adoptionapp/provider/screen_provider/bottom_nav_provider.dart';
-import 'package:adoptionapp/widgets/toast_helper.dart';
+import 'package:adoptionapp/helper/toast_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

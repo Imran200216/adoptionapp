@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:adoptionapp/widgets/toast_helper.dart';
+import 'package:adoptionapp/helper/toast_helper.dart';
 
 class ChatRoomProvider with ChangeNotifier {
   String? _roomId;

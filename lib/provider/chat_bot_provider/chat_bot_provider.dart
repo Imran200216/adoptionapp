@@ -10,7 +10,10 @@ class ChatBotProvider with ChangeNotifier {
   static const apiKey = "AIzaSyDjEeJYEoKoImi5-Wf5M2xM0AX26SmoqDo";
 
   /// gemini ai model
-  final model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+  final model = GenerativeModel(
+    model: 'gemini-pro',
+    apiKey: apiKey,
+  );
 
   List<Message> get messages => _messages;
 

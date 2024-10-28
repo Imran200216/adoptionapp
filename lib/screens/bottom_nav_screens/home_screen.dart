@@ -219,8 +219,8 @@ class HomeScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(15),
                                     color: Colors.white,
                                   ),
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 8.0),
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
                                 ),
                               );
                             },
@@ -241,8 +241,7 @@ class HomeScreen extends StatelessWidget {
                           final petCategory = pet['petCategory'] ??
                               'Others'; // Replace with your actual field name
                           final petName = pet['petName']?.toLowerCase() ?? '';
-                          final petBreed =
-                              pet['petBreed']?.toLowerCase() ?? '';
+                          final petBreed = pet['petBreed']?.toLowerCase() ?? '';
                           final searchQuery =
                               searchProvider.searchQuery.toLowerCase();
 
@@ -293,73 +292,99 @@ class HomeScreen extends StatelessWidget {
                             var petSnapshot = filteredPets[index];
 
                             /// Ensure that petSnapshot is of type DocumentSnapshot
-                            ///   Extract the data as a Map<String, dynamic>
+                            /// Extract the data as a Map<String, dynamic>
                             var petData =
                                 petSnapshot.data() as Map<String, dynamic>?;
 
                             // Check if petData is not null before creating an instance of PetModels
                             if (petData != null) {
                               // Create an instance of PetModels from the pet data
-                              PetModels pet =
-                                  PetModels.fromFirestore(petData);
+                              PetModels pet = PetModels.fromFirestore(petData);
 
-                              return OpenContainer(
-                                transitionType: ContainerTransitionType.fade,
-                                transitionDuration:
-                                    const Duration(milliseconds: 800),
-                                openBuilder:
-                                    (BuildContext context, VoidCallback _) {
-                                  // Pass the pet object to PetDescriptionScreen
-                                  return PetDescriptionScreen(pet: pet);
-                                },
-                                closedShape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
+                              return Dismissible(
+                                key: Key(pet.petId),
+                                // Ensure that the key is unique
+                                background: Container(
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                closedElevation: 0.0,
-                                closedBuilder: (BuildContext context,
-                                    VoidCallback openContainer) {
-                                  return PetCard(
-                                    onFavoriteTap: () {
-                                      /// add to favorite using provider
-                                      if (favoriteProvider
-                                          .isFavorite(pet.petId)) {
-                                        // If the pet is already a favorite, remove it
-                                        favoriteProvider.removeFavoritePet(
-                                            pet.petId, context);
-                                      } else {
-                                        // If the pet is not a favorite, add it
-                                        favoriteProvider.addFavoritePet(
-                                            pet.petId, context);
-                                      }
-                                    },
-                                    favoriteIcon: Icon(
-                                      favoriteProvider.isFavorite(pet.petId)
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: favoriteProvider
-                                              .isFavorite(pet.petId)
-                                          ? AppColors.failureToastColor
-                                          : AppColors.subTitleColor,
+                                direction: DismissDirection.endToStart,
+                                onDismissed: (direction) {
+                                  // Handle the dismiss action (e.g., delete the pet from the list)
+                                  // You can implement the delete functionality here
+                                  favoriteProvider.removeFavoritePet(
+                                      pet.petId, context);
+                                  // Show a snackbar or toast if needed
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${pet.petName} has been removed'),
                                     ),
-                                    petId: pet.petId,
-                                    imageUrl: pet.petImages.isNotEmpty
-                                        ? pet.petImages[0]
-                                        : "Pet Image",
-                                    petName: pet.petName,
-                                    petBreed: pet.petBreed,
-                                    petGender: pet.petGender,
-                                    petAge: pet.petAge,
-                                    petOwnerName: pet.petOwnerName,
                                   );
                                 },
+                                child: OpenContainer(
+                                  transitionType: ContainerTransitionType.fade,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 800),
+                                  openBuilder:
+                                      (BuildContext context, VoidCallback _) {
+                                    // Pass the pet object to PetDescriptionScreen
+                                    return PetDescriptionScreen(pet: pet);
+                                  },
+                                  closedShape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  closedElevation: 0.0,
+                                  closedBuilder: (BuildContext context,
+                                      VoidCallback openContainer) {
+                                    return PetCard(
+                                      onFavoriteTap: () {
+                                        /// add to favorite using provider
+                                        if (favoriteProvider
+                                            .isFavorite(pet.petId)) {
+                                          // If the pet is already a favorite, remove it
+                                          favoriteProvider.removeFavoritePet(
+                                              pet.petId, context);
+                                        } else {
+                                          // If the pet is not a favorite, add it
+                                          favoriteProvider.addFavoritePet(
+                                              pet.petId, context);
+                                        }
+                                      },
+                                      favoriteIcon: Icon(
+                                        favoriteProvider.isFavorite(pet.petId)
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: favoriteProvider
+                                                .isFavorite(pet.petId)
+                                            ? AppColors.failureToastColor
+                                            : AppColors.subTitleColor,
+                                      ),
+                                      petId: pet.petId,
+                                      imageUrl: pet.petImages.isNotEmpty
+                                          ? pet.petImages[0]
+                                          : "Pet Image",
+                                      petName: pet.petName,
+                                      petBreed: pet.petBreed,
+                                      petGender: pet.petGender,
+                                      petAge: pet.petAge,
+                                      petOwnerName: pet.petOwnerName,
+                                    );
+                                  },
+                                ),
                               );
                             } else {
                               // Return an empty container if petData is null
                               return Container();
                             }
                           },
-                          separatorBuilder:
-                              (BuildContext context, int index) {
+                          separatorBuilder: (BuildContext context, int index) {
                             return SizedBox(
                               height: size.height * 0.02,
                             );
