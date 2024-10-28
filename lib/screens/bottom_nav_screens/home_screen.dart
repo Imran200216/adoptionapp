@@ -1,5 +1,6 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
+import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
 import 'package:adoptionapp/provider/app_required_providers/internet_checker_provider.dart';
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
@@ -7,6 +8,7 @@ import 'package:adoptionapp/provider/search_provider/search_provider.dart';
 import 'package:adoptionapp/screens/chat_bot/chat_bot_intro_screen.dart';
 import 'package:adoptionapp/screens/chat_bot/chat_bot_screen.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
+import 'package:adoptionapp/widgets/custom_alert_dialog.dart';
 import 'package:adoptionapp/widgets/custom_chips.dart';
 import 'package:adoptionapp/widgets/custom_internet_checker.dart';
 import 'package:adoptionapp/widgets/pet_card.dart';
@@ -27,6 +29,10 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     /// media query
     final size = MediaQuery.of(context).size;
+
+    /// add pet content provider
+    final addPetContentProvider =
+        Provider.of<AddPetToFireStoreProvider>(context);
 
     /// pet category providers
     final petProvider = Provider.of<PetCategoryProvider>(context);
@@ -316,16 +322,27 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 direction: DismissDirection.endToStart,
                                 onDismissed: (direction) {
-                                  // Handle the dismiss action (e.g., delete the pet from the list)
-                                  // You can implement the delete functionality here
-                                  favoriteProvider.removeFavoritePet(
-                                      pet.petId, context);
-                                  // Show a snackbar or toast if needed
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${pet.petName} has been removed'),
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return CustomAlertDialog(
+                                          title: "Delete adoption post",
+                                          content:
+                                              "Are you sure want to delete the post?",
+                                          confirmText: "Delete",
+                                          cancelText: "Cancel",
+                                          onConfirm: () {
+                                            /// deletion of pet posts
+                                            addPetContentProvider.deletePet(
+                                              pet.petId,
+                                              pet.petImages,
+                                              context,
+                                            );
+                                          },
+                                          onCancel: () {
+                                            Navigator.pop(context);
+                                          });
+                                    },
                                   );
                                 },
                                 child: OpenContainer(

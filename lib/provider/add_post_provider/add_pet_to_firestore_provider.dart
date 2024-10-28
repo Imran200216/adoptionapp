@@ -312,4 +312,43 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
     // selectedGender.isNotEmpty ||
     // completePhoneNumber.isNotEmpty;
   }
+
+  /// Method to delete a pet from Fire store and Firebase Storage
+  Future<void> deletePet(
+      String petId, List<String> petImageUrls, BuildContext context) async {
+    setLoading(true);
+    try {
+      // Delete pet images from Firebase Storage
+      for (String imageUrl in petImageUrls) {
+        try {
+          Reference storageRef = _storage.refFromURL(imageUrl);
+          await storageRef.delete();
+        } catch (e) {
+          print("Failed to delete image: $e");
+          ToastHelper.showErrorToast(
+            context: context,
+            message: "Failed to delete some images: $e",
+          );
+        }
+      }
+
+      // Delete pet data from Firestore
+      await _firestore.collection('pets').doc(petId).delete();
+
+      ToastHelper.showSuccessToast(
+        context: context,
+        message: "Pet deleted successfully!",
+      );
+
+      // Optionally, navigate back or refresh the list
+      notifyListeners();
+    } catch (e) {
+      ToastHelper.showErrorToast(
+        context: context,
+        message: "Failed to delete pet: $e",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 }

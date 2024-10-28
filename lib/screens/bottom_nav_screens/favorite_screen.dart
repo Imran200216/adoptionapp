@@ -1,7 +1,9 @@
 import 'package:adoptionapp/constants/colors.dart';
 import 'package:adoptionapp/modals/pet_modal.dart';
+import 'package:adoptionapp/provider/add_post_provider/add_pet_to_firestore_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
+import 'package:adoptionapp/widgets/custom_alert_dialog.dart';
 import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +18,10 @@ class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
+    /// add pet content provider
+    final addPetContentProvider =
+        Provider.of<AddPetToFireStoreProvider>(context);
 
     /// favorite provider
     final favoriteProvider = Provider.of<AddPetFavoriteProvider>(context);
@@ -102,51 +108,91 @@ class FavoriteScreen extends StatelessWidget {
                                 snapshot.data!.data() as Map<String, dynamic>;
                             PetModels pet = PetModels.fromFirestore(petData);
 
-                            return OpenContainer(
-                              transitionType: ContainerTransitionType.fade,
-                              transitionDuration:
-                                  const Duration(milliseconds: 800),
-                              openBuilder:
-                                  (BuildContext context, VoidCallback _) {
-                                // Pass the pet object to PetDescriptionScreen
-                                return PetDescriptionScreen(pet: pet);
-                              },
-                              closedShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
+                            return Dismissible(
+                              key: Key(petId),
+                              // Unique key for each Dismissible widget
+                              direction: DismissDirection.endToStart,
+                              // Swipe direction
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
                               ),
-                              closedElevation: 0.0,
-                              openElevation: 0.0,
-                              closedColor: AppColors.secondaryColor,
-                              openColor: AppColors.secondaryColor,
-                              closedBuilder: (BuildContext context,
-                                  VoidCallback openContainer) {
-                                return InkWell(
-                                  onTap: openContainer,
-                                  child: PetCard(
-                                    petId: petId,
-                                    imageUrl: pet.petImages.isNotEmpty
-                                        ? pet.petImages[0]
-                                        : 'https://via.placeholder.com/150',
-                                    petName: pet.petName,
-                                    petBreed: pet.petBreed,
-                                    petGender: pet.petGender,
-                                    petAge: pet.petAge,
-                                    petOwnerName: pet.petOwnerName,
-                                    favoriteIcon: const Icon(
-                                      Icons.favorite,
-                                      color:
-                                          Colors.red, // Show solid red icon
-                                    ),
-                                    onFavoriteTap: () {
-                                      // Remove from favorites when tapped
-                                      favoriteProvider.removeFavoritePet(
-                                        petId,
-                                        context,
-                                      );
-                                    },
-                                  ),
+                              onDismissed: (direction) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return CustomAlertDialog(
+                                        title: "Delete adoption post",
+                                        content:
+                                            "Are you sure want to delete the post?",
+                                        confirmText: "Delete",
+                                        cancelText: "Cancel",
+                                        onConfirm: () {
+                                          /// deletion of pet posts
+                                          addPetContentProvider.deletePet(
+                                            pet.petId,
+                                            pet.petImages,
+                                            context,
+                                          );
+                                        },
+                                        onCancel: () {
+                                          Navigator.pop(context);
+                                        });
+                                  },
                                 );
                               },
+                              child: OpenContainer(
+                                transitionType: ContainerTransitionType.fade,
+                                transitionDuration:
+                                    const Duration(milliseconds: 800),
+                                openBuilder:
+                                    (BuildContext context, VoidCallback _) {
+                                  // Pass the pet object to PetDescriptionScreen
+                                  return PetDescriptionScreen(pet: pet);
+                                },
+                                closedShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                closedElevation: 0.0,
+                                openElevation: 0.0,
+                                closedColor: AppColors.secondaryColor,
+                                openColor: AppColors.secondaryColor,
+                                closedBuilder: (BuildContext context,
+                                    VoidCallback openContainer) {
+                                  return InkWell(
+                                    onTap: openContainer,
+                                    child: PetCard(
+                                      petId: petId,
+                                      imageUrl: pet.petImages.isNotEmpty
+                                          ? pet.petImages[0]
+                                          : 'https://via.placeholder.com/150',
+                                      petName: pet.petName,
+                                      petBreed: pet.petBreed,
+                                      petGender: pet.petGender,
+                                      petAge: pet.petAge,
+                                      petOwnerName: pet.petOwnerName,
+                                      favoriteIcon: const Icon(
+                                        Icons.favorite,
+                                        color:
+                                            Colors.red, // Show solid red icon
+                                      ),
+                                      onFavoriteTap: () {
+                                        // Remove from favorites when tapped
+                                        favoriteProvider.removeFavoritePet(
+                                          petId,
+                                          context,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
                             );
                           },
                         );
