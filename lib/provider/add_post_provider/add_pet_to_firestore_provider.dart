@@ -351,39 +351,4 @@ class AddPetToFireStoreProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
-
-  List<PetModels> _pets = [];
-
-  Future<void> fetchAllPets(BuildContext context) async {
-    _setLoading(true); // Start loading
-    try {
-      QuerySnapshot querySnapshot = await _firestore.collection('pets').get();
-      _pets = querySnapshot.docs
-          .map((doc) =>
-              PetModels.fromFirestore(doc.data() as Map<String, dynamic>))
-          .toList();
-
-      // Check if there are no pets and show a toast message
-      if (_pets.isEmpty) {
-        ToastHelper.showErrorToast(
-          context: context,
-          message: 'No pets found in the collection.',
-        );
-      }
-    } catch (e) {
-      debugPrint("Error fetching pets: $e");
-      ToastHelper.showErrorToast(
-        message: 'Error fetching pets: $e',
-        context: context,
-      ); // Show toast for error
-    } finally {
-      _setLoading(false); // Stop loading
-    }
-    notifyListeners(); // Notify listeners about the change
-  }
-
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners(); // Notify listeners about loading state change
-  }
 }

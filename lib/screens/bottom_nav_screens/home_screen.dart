@@ -5,6 +5,8 @@ import 'package:adoptionapp/provider/app_required_providers/internet_checker_pro
 import 'package:adoptionapp/provider/category_provider/pet_category_provider.dart';
 import 'package:adoptionapp/provider/favorite_provider/add_pet_favorite_provider.dart';
 import 'package:adoptionapp/provider/search_provider/search_provider.dart';
+import 'package:adoptionapp/provider/user_details_providers/email_avatar_provider.dart';
+import 'package:adoptionapp/provider/user_details_providers/guest_avatar_provider.dart';
 import 'package:adoptionapp/screens/chat_bot/chat_bot_intro_screen.dart';
 import 'package:adoptionapp/screens/chat_bot/chat_bot_screen.dart';
 import 'package:adoptionapp/screens/description_screen/pet_description_screen.dart';
@@ -14,10 +16,12 @@ import 'package:adoptionapp/widgets/custom_internet_checker.dart';
 import 'package:adoptionapp/widgets/pet_card.dart';
 import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:liquid_pull_refresh/liquid_pull_refresh.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,6 +81,31 @@ class HomeScreen extends StatelessWidget {
       }
     }
 
+    /// to identify the current user
+    final user = FirebaseAuth.instance.currentUser;
+
+    // Fetch guest user details when the widget is built
+    if (user != null && user.isAnonymous) {
+      Provider.of<GuestUserDetailsProvider>(context, listen: false)
+          .fetchGuestUserDetails();
+    } else {
+      Provider.of<EmailUserDetailsProvider>(context, listen: false)
+          .fetchEmailUserDetails();
+    }
+
+    /// guest user details provider
+    final guestUserDetailsProvider =
+        Provider.of<GuestUserDetailsProvider>(context);
+
+    /// email user details provider
+    final emailUserDetailsProvider =
+        Provider.of<EmailUserDetailsProvider>(context);
+
+    /// Fetch correct user data based on sign-in method
+    final avatarUrl = user!.isAnonymous
+        ? guestUserDetailsProvider.avatarPhotoURL
+        : emailUserDetailsProvider.avatarPhotoURL;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primaryColor,
@@ -122,12 +151,29 @@ class HomeScreen extends StatelessWidget {
                           fontFamily: "NunitoSans",
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.notifications,
-                          color: AppColors.subTitleColor,
-                          size: size.width * 0.06,
+
+                      /// avatar profile pic
+                      Container(
+                        height: 44,
+                        width: 44,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: avatarUrl ??
+                                "https://imgs.search.brave.com/G7EAKN2_tgpXRvp6SG9UP-WdSrIotMa3XzzGAZ29UCo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAwLzIzLzcyLzU5/LzM2MF9GXzIzNzI1/OTQ0X1cyYVNyZzNL/cXczbE9tVTRJQW43/aVhWODhSbm5mY2gx/LmpwZw",
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Icon(
+                              Icons.error,
+                              color: AppColors.secondaryColor,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -308,44 +354,46 @@ class HomeScreen extends StatelessWidget {
                               // Create an instance of PetModels from the pet data
                               PetModels pet = PetModels.fromFirestore(petData);
 
-                              return Dismissible(
+                              return Slidable(
                                 key: Key(pet.petId),
-                                // Ensure that the key is unique
-                                background: Container(
-                                  color: Colors.red,
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                direction: DismissDirection.endToStart,
-                                onDismissed: (direction) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return CustomAlertDialog(
-                                          title: "Delete adoption post",
-                                          content:
-                                              "Are you sure want to delete the post?",
-                                          confirmText: "Delete",
-                                          cancelText: "Cancel",
-                                          onConfirm: () {
-                                            /// deletion of pet posts
-                                            addPetContentProvider.deletePet(
-                                              pet.petId,
-                                              pet.petImages,
-                                              context,
+                                // Define the action on the right side (delete)
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  extentRatio: 0.25,
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return CustomAlertDialog(
+                                              title: "Delete adoption post",
+                                              content:
+                                                  "Are you sure want to delete the post?",
+                                              confirmText: "Delete",
+                                              cancelText: "Cancel",
+                                              onConfirm: () {
+                                                // Handle deletion of pet posts
+                                                addPetContentProvider.deletePet(
+                                                  pet.petId,
+                                                  pet.petImages,
+                                                  context,
+                                                );
+                                              },
+                                              onCancel: () {
+                                                Navigator.pop(context);
+                                              },
                                             );
                                           },
-                                          onCancel: () {
-                                            Navigator.pop(context);
-                                          });
-                                    },
-                                  );
-                                },
+                                        );
+                                      },
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Delete',
+                                    ),
+                                  ],
+                                ),
                                 child: OpenContainer(
                                   transitionType: ContainerTransitionType.fade,
                                   transitionDuration:
@@ -363,14 +411,12 @@ class HomeScreen extends StatelessWidget {
                                       VoidCallback openContainer) {
                                     return PetCard(
                                       onFavoriteTap: () {
-                                        /// add to favorite using provider
+                                        // Handle favorite toggle using provider
                                         if (favoriteProvider
                                             .isFavorite(pet.petId)) {
-                                          // If the pet is already a favorite, remove it
                                           favoriteProvider.removeFavoritePet(
                                               pet.petId, context);
                                         } else {
-                                          // If the pet is not a favorite, add it
                                           favoriteProvider.addFavoritePet(
                                               pet.petId, context);
                                         }
